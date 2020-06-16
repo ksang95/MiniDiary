@@ -1,13 +1,13 @@
-import express from 'express';
-import path from 'path';
-import mongoose from 'mongoose';
-import session from 'express-session';
-import api from './routes';
-import morgan from 'morgan';
-// import bodyParser from 'body-parser';
+const express = require('express');
+const path = require('path');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const api = require('./routes');
+const morgan = require('morgan');
+// const bodyParser = require('body-parser');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 const db = mongoose.connection;
 db.on('error', console.error);

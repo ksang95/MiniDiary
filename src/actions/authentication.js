@@ -11,7 +11,7 @@ export function loginRequest(userid, password) {
     return (dispatch) => {
         dispatch(login());
 
-        return axios.post('/user/login')
+        return axios.post('/api/user/login')
             .then(response => {
                 dispatch(loginSuccess());
             }).catch(error => {
