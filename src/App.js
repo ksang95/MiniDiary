@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Authentication from './components/Authentication';
-import { getInfoRequest } from './actions/authentication';
-import { Route } from 'react-router-dom';
+import { getInfoRequest, logoutRequest } from './actions/authentication';
+import { Route, Switch } from 'react-router-dom';
 import Main from './components/Main';
 import Header from './components/Header';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import WritePost from './components/WritePost';
 
 class App extends Component {
 
@@ -12,7 +14,6 @@ class App extends Component {
     const result = document.cookie.split(';').find(e => e.startsWith('user='));
     if (result) {
       const user = JSON.parse(atob(result.split('=')[1]));
-      console.log(user)
 
       if (!user.isLoggedIn)
         return;
@@ -32,15 +33,17 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.props.info);
     return (
       <div className="App">
         <Header isLoggedIn={this.props.info.isLoggedIn}
           nickname={this.props.info.currentUser.nickname}
+          logoutRequest={this.props.logoutRequest}
         ></Header>
-        <Route path="/" component={Main}></Route>
-        <Route path="/login" component={Authentication}></Route>
-        <Route path=""></Route>
+        <Route exact path="/" component={Main}></Route>
+        <Switch>
+          <Route path="/login" component={Authentication}></Route>
+          <Route path="/new-diary" component={WritePost}></Route>
+        </Switch>
       </div>
     );
   }
@@ -56,6 +59,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getInfoRequest: () => {
       return dispatch(getInfoRequest());
+    },
+    logoutRequest: () => {
+      return dispatch(logoutRequest());
     }
   }
 };

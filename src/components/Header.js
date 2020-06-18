@@ -1,17 +1,57 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import { Navbar, Nav, Button } from 'react-bootstrap';
+import './header.css';
+import { connect } from 'react-redux';
 
 class Header extends Component {
+
+    handleLogout = (e) => {
+        this.props.logoutRequest()
+            .then(() => {
+                let loginData = {
+                    isLoggedIn: false,
+                    userid: ''
+                };
+
+                document.cookie = 'user=' + btoa(JSON.stringify(loginData));
+            });
+    }
+
     render() {
+        const loggedInHeader = (<Navbar bg="dark" variant="dark">
+            <Navbar.Brand href="/" className="ml-2 mr-auto">
+                <span>{`${this.props.nickname}'s Diary`}</span>
+                <span className={'logged-in-brand'}>My Diary</span>
+            </Navbar.Brand>
+            <Button onClick={this.handleLogout} className="mr-2">로그아웃</Button>
+        </Navbar>);
+
+        const loggedOutHeader = (<Navbar bg="dark" variant="dark">
+            <Navbar.Brand href="/" className="ml-2 mr-auto">
+                <span className={'logged-out-brand'}>My Diary</span>
+            </Navbar.Brand>
+            <Link to="/login" className="mr-2"><Button>로그인</Button></Link>
+        </Navbar>);
+
         return (
-            <div>
-                <span>
-                    {this.props.isLoggedIn ? `${this.props.nickname}'s` : 'My'} Diary
-                </span>
-                <span><Link to="/login">로그인</Link></span>
-            </div>
+            <header>
+                {this.props.isLoggedIn ? loggedInHeader : loggedOutHeader}
+            </header>
         );
     }
 }
 
-export default Header;
+const mapStateToProps = (state) => {
+    return {
+
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

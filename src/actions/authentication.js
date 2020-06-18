@@ -10,7 +10,7 @@ import axios from 'axios';
 export function registerRequest(user) {
     return (dispatch) => {
         dispatch(register());
-        return axios.post('/api/user/signup', {user})
+        return axios.post('/api/user/signup', { user })
             .then(response => {
                 dispatch(registerSuccess());
             }).catch(error => {
@@ -98,5 +98,21 @@ export function getInfoSuccess(info) {
 export function getInfoFailure() {
     return {
         type: AUTH_GET_INFO_FAILURE
+    };
+};
+
+export function logoutRequest() {
+    return (dispatch) => {
+
+        return axios.post('api/user/logout')
+            .then(response => {
+                dispatch(logout());
+            });
+    };
+};
+
+export function logout() {
+    return {
+        type: AUTH_LOGOUT
     };
 };
