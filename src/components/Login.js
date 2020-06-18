@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { loginRequest } from '../actions/authentication';
+import { loginRequest, getInfoRequest } from '../actions/authentication';
 
 class Login extends Component {
     state = {
-        id: '',
+        userid: '',
         password: '',
         error: ''
     }
@@ -17,7 +17,8 @@ class Login extends Component {
     }
 
     handleClick = (e) => {
-        this.props.loginRequest(this.state.id, this.state.password)
+        const { userid, password } = this.state;
+        this.props.loginRequest(userid, password)
             .then(
                 () => {
                     if (this.props.status === 'FAILURE') {
@@ -26,7 +27,13 @@ class Login extends Component {
                         });
                     }
                     else {
-                        window.confirm('로그인 성공');
+                        let loginData = {
+                            isLoggedIn: true,
+                            userid: userid
+                        };
+                        document.cookie = 'user=' + btoa(JSON.stringify(loginData));
+                        this.props.getInfoRequest();
+                        this.props.history.push('/');
                     }
                 }
             )
@@ -36,12 +43,12 @@ class Login extends Component {
         return (
             <div className="Login">
                 <div>
-                    <label for="id">ID</label>
-                    <input type="text" id="id" name="id" value={this.state.id}
+                    <label htmlFor="userid">아이디</label>
+                    <input type="text" id="userid" name="userid" value={this.state.userid}
                         onChange={this.handleChange} autoFocus></input>
                 </div>
                 <div>
-                    <label for="password">PASSWORD</label>
+                    <label htmlFor="password">비밀번호</label>
                     <input type="password" id="password" name="password"
                         value={this.state.password} onChange={this.handleChange}></input>
                 </div>
@@ -65,6 +72,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         loginRequest: (id, password) => {
             return dispatch(loginRequest(id, password));
+        },
+        getInfoRequest: () => {
+            return dispatch(getInfoRequest());
         }
     }
 }

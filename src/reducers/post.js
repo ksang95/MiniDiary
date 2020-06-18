@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export default function authentication(state, action) {
-    if (state == undefined)
+    if (typeof state === 'undefined')
         state = initialState;
 
     switch (action.type) {
