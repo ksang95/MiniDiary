@@ -10,7 +10,7 @@ import axios from 'axios';
 export function registerRequest(user) {
     return (dispatch) => {
         dispatch(register());
-        return axios.post('/api/user/signup', { user })
+        return axios.post('/api/user/new-user', { user })
             .then(response => {
                 dispatch(registerSuccess());
             }).catch(error => {
@@ -73,7 +73,7 @@ export function getInfoRequest() {
     return (dispatch) => {
         dispatch(getInfo());
 
-        return axios.get('/api/user/info')
+        return axios.get('/api/user/me/info')
             .then(response => {
                 dispatch(getInfoSuccess(response.data.info));
             }).catch(error => {

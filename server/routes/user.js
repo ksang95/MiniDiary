@@ -3,7 +3,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-router.post('/signup', (req, res) => {
+router.post('/new-user', (req, res) => {
     let pwRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{6,20}$/;
 
     if (!pwRegex.test(req.body.user.password)) {
@@ -23,14 +23,14 @@ router.post('/signup', (req, res) => {
             });
     });
 
-    let user=new User({
+    let user = new User({
         ...req.body.user
     });
 
-    user.password=user.generateHash(user.password);
+    user.password = user.generateHash(user.password);
 
-    user.save(err=>{
-        if(err) throw err;
+    user.save((err, user) => {
+        if (err) throw err;
 
         req.session.loginInfo = {
             _id: user._id,
@@ -63,7 +63,7 @@ router.post('/login', (req, res) => {
     })
 });
 
-router.get('/info', (req, res) => {
+router.get('/me/info', (req, res) => {
     if (typeof req.session.loginInfo === "undefined") {
         return res.status(401).json({
             error: 1
@@ -74,10 +74,14 @@ router.get('/info', (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) throw err;
+    });
+
     res.json({ success: true });
 });
 
-router.delete('/leave', (req, res) => {
+router.delete('/me', (req, res) => {
     res.json({ success: true });
 })
 
