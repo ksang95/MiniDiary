@@ -14,7 +14,7 @@ const initialState = {
     getByUser: {
         status: 'INIT',
         error: -1,
-        post: []
+        list: []
     }
 };
 
@@ -60,6 +60,25 @@ export default function authentication(state, action) {
                 getById: {
                     status: { $set: 'FAILURE' },
                     error: { $set: action.code }
+                }
+            });
+        case types.POST_GET_BY_USER:
+            return update(state, {
+                getByUser: {
+                    status: { $set: 'WAITING' }
+                }
+            });
+        case types.POST_GET_BY_USER_SUCCESS:
+            return update(state, {
+                getByUser: {
+                    status: { $set: 'SUCCESS' },
+                    list: { $set: action.list }
+                }
+            });
+        case types.POST_GET_BY_USER_FAILURE:
+            return update(state, {
+                getByUser: {
+                    status: { $set: 'FAILURE' }
                 }
             });
         default:

@@ -1,0 +1,16 @@
+.Post > .wrapper {
+    margin: 8px;
+    color: white;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+.Post > .wrapper .info{
+    display: none;
+    color: black;
+    background-color: whitesmoke;
+}
+
+.Post > .wrapper:hover .info {
+    display: block;
+}

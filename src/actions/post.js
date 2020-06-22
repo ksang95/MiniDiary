@@ -9,7 +9,7 @@ export function createRequest(post, deletedImages) {
     return (dispatch) => {
         dispatch(create());
 
-        return axios.post('/api/post/new-post', {  post, deletedImages })
+        return axios.post('/api/post/new-post', { post, deletedImages })
             .then((response) => {
                 dispatch(createSuccess(response.data.id));
             }).catch((error) => {
@@ -67,5 +67,37 @@ export function getByIdFailure(code) {
     return {
         type: POST_GET_BY_ID_FAILURE,
         code
+    };
+};
+
+export function getByUserRequest(start, end) {
+    return (dispatch) => {
+        dispatch(getByUser());
+
+        return axios.get(`/api/post/my-posts`, { params: { start, end } })
+            .then((response) => {
+                dispatch(getByUserSuccess(response.data.list));
+            }).catch((error) => {
+                dispatch(getByUserFailure());
+            });
+    };
+};
+
+export function getByUser() {
+    return {
+        type: POST_GET_BY_USER
+    };
+};
+
+export function getByUserSuccess(list) {
+    return {
+        type: POST_GET_BY_USER_SUCCESS,
+        list
+    };
+};
+
+export function getByUserFailure() {
+    return {
+        type: POST_GET_BY_USER_FAILURE,
     };
 };

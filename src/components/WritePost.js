@@ -12,35 +12,33 @@ import ImageResize from 'quill-image-resize-module';
 import { ImageDrop } from 'quill-image-drop-module';
 import { connect } from 'react-redux'
 import { createRequest } from '../actions/post';
+import { CirclePicker } from 'react-color';
+import './writePost.css';
 
 Quill.register('modules/imageUpload', ImageUpload);
 Quill.register('modules/imageResize', ImageResize);
 Quill.register('modules/imageDrop', ImageDrop);
 
-const Period = new Record({
-    start: '',
-    end: ''
-});
 
 const Post = new Record({
-    period: Period(),
+    start: '',
+    end: '',
     title: '',
-    content: null
+    content: '',
+    color: ''
 })
 
 class WritePost extends Component {
     state = {
         post: Post({
-            period: Period({
-                start: '2020-01-01',
-                end: '2020-01-01'
-            }),
+            start: null,
+            end: null,
             title: '',
-            content: null
+            content: '',
+            color: '#2ccce4'
         }),
         imageList: [],
         error: '',
-        value: null
     }
 
     quill = null;
@@ -48,25 +46,31 @@ class WritePost extends Component {
     componentDidMount() {
         const period = queryString.parse(this.props.location.search);
         this.setState({
-            post: this.state.post.set('period', Period(period))
+            post: this.state.post.merge({ start: period.start, end: period.end })
         });
     }
 
     handleStartDateChange = (date) => {
         this.setState({
-            post: this.state.post.setIn(['period', 'start'], date)
+            post: this.state.post.set('start', date)
         });
     }
 
     handleEndDateChange = (date) => {
         this.setState({
-            post: this.state.post.setIn(['period', 'end'], date)
+            post: this.state.post.set('end', date)
         });
     }
 
     handleTitleChange = (e) => {
         this.setState({
             post: this.state.post.set('title', e.target.value)
+        });
+    }
+
+    handleColorChange = (color) => {
+        this.setState({
+            post: this.state.post.set('color', color.hex)
         });
     }
 
@@ -121,9 +125,9 @@ class WritePost extends Component {
 
 
     render() {
-        const { period, title, content } = this.state.post;
-        const startDate = new Date(period.start);
-        const endDate = new Date(period.end);
+        const { start, end, title, content, color } = this.state.post;
+        const startDate = new Date(start);
+        const endDate = new Date(end);
 
         const modules = {
             toolbar: {
@@ -181,6 +185,10 @@ class WritePost extends Component {
             'link', 'image', 'video'
         ];
 
+        const backgroundStyle = {
+            background: color,
+        };
+
         return (
             <div className="WritePost" >
                 <div>
@@ -207,6 +215,7 @@ class WritePost extends Component {
                 <label htmlFor="title">TITLE :</label>
                 <input type="text" id="title" name="title"
                     value={title} onChange={this.handleTitleChange} autoFocus></input>
+
                 <div>
                     <ReactQuill
                         theme="snow"
@@ -215,6 +224,14 @@ class WritePost extends Component {
                         defaultValue={content}
                         onChange={this.handleContentChange}
                     />
+                </div>
+                <div>
+                    <div>제목 배경 색상
+                    <div className='title-background-example' style={backgroundStyle}>Title</div>
+                    </div>
+                    <CirclePicker color={color} onChangeComplete={this.handleColorChange}
+                        colors={['#c4def6', '#F47373', '#697689', '#37D67A', '#2CCCE4', '#555555',
+                            '#dce775', '#ff8a65', '#ba68c8', '#FCB900', '#8BC34A']} />
                 </div>
                 <Button onClick={this.handleSubmit}>Create</Button>
 

@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         // let temp = 'image';
         let fileExtension = file.originalname.substring(file.originalname.lastIndexOf('.'));
-        if (typeof req.session.loginInfo !== 'undefined')
+        if (typeof req.session.loginInfo !== 'undefined') //로그인 안하면 cb() 호출안해서 저장 안되는 듯..
             cb(null, req.session.loginInfo.userid + '-' + Date.now() + fileExtension)
     }
 });
@@ -38,8 +38,9 @@ router.post('/new-post', (req, res) => {
         writer: req.session.loginInfo.userid,
         title: req.body.post.title,
         content: req.body.post.content,
-        start: new Date(req.body.post.period.start),
-        end: new Date(req.body.post.period.end),
+        color: req.body.post.color,
+        start: new Date(req.body.post.start),
+        end: new Date(req.body.post.end),
     });
 
     post.save((err, post) => {
@@ -57,22 +58,36 @@ router.post('/new-post/resource', upload.single('images'), (req, res) => {
 });
 
 router.get('/my-posts', (req, res) => {
+    if (typeof req.session.loginInfo === 'undefined') {
+        return res.status(403).json({
+            error: "NOT LOGGED IN",
+            code: 1
+        });
+    }
+
+    console.log(req.query)
     Post.find(
         {
-            _id: req.session.loginInfo._id,
-            start: {
-                '$lte': new Date(req.body.end),
-            },
-            end: {
-                '$gte': new Date(req.body.start)
-            }
+            $and: [
+                { writer: req.session.loginInfo.userid },
+                {
+                    start: {
+                        $lte: req.query.end,
+                    }
+                },
+                {
+                    end: {
+                        $gte: req.query.start
+                    }
+                }
+            ]
         },
         { content: false })
         .sort({ start: 1 })
         .exec((err, posts) => {
             if (err) return err;
-
-            res.json(posts);
+            console.log(posts)
+            res.json({ list: posts });
         });
 });
 
@@ -107,10 +122,6 @@ router.delete('/:id', (req, res) => {
 });
 
 router.put('/:id/resource', (req, res) => {
-
-});
-
-router.delete('/:id/resource', (req, res) => {
 
 });
 

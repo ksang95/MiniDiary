@@ -1,0 +1,14 @@
+.WritePost .block-picker > div > div {
+    color: white !important;
+}
+
+.WritePost .title-background-example {
+    height: 30px;
+    width: 50px;
+    outline: none;
+    border-radius: 5px;
+    display: inline-block;
+    color: white;
+    text-align: center;
+    margin: 10px;
+}

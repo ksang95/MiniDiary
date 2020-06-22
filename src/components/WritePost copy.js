@@ -17,13 +17,10 @@ Quill.register('modules/imageUpload', ImageUpload);
 Quill.register('modules/imageResize', ImageResize);
 Quill.register('modules/imageDrop', ImageDrop);
 
-const Period = new Record({
-    start: '',
-    end: ''
-});
 
 const Post = new Record({
-    period: Period(),
+    start: '',
+    end: '',
     title: '',
     content: null
 })
@@ -31,16 +28,14 @@ const Post = new Record({
 class WritePost extends Component {
     state = {
         post: Post({
-            period: Period({
-                start: '2020-01-01',
-                end: '2020-01-01'
-            }),
+            start: '2020-01-01',
+            end: '2020-01-01',
             title: '',
             content: null
         }),
         imageList: [],
         error: '',
-        value:''
+        value: ''
     }
 
     quill = null;
@@ -48,19 +43,20 @@ class WritePost extends Component {
     componentDidMount() {
         const period = queryString.parse(this.props.location.search);
         this.setState({
-            post: this.state.post.set('period', Period(period))
+            post: this.state.post.set('start', period.start),
+            post: this.state.post.set('end', period.end)
         });
     }
 
     handleStartDateChange = (date) => {
         this.setState({
-            post: this.state.post.setIn(['period','start'], date)
+            post: this.state.post.set('start', date)
         });
     }
 
     handleEndDateChange = (date) => {
         this.setState({
-            post: this.state.post.setIn(['period','end'], date)
+            post: this.state.post.set('end', date)
         });
     }
 
@@ -74,7 +70,7 @@ class WritePost extends Component {
         // console.log(editor.getHTML());
         // console.log(editor.getContents());
         this.setState({
-            value:  content
+            value: content
         });
     }
 
@@ -121,9 +117,9 @@ class WritePost extends Component {
 
 
     render() {
-        const { period, title, content } = this.state.post;
-        const startDate = new Date(period.start);
-        const endDate = new Date(period.end);
+        const { start, end, title, content } = this.state.post;
+        const startDate = new Date(start);
+        const endDate = new Date(end);
 
         const modules = {
             toolbar: {
