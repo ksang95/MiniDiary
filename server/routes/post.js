@@ -2,6 +2,8 @@ const express = require('express');
 const Post = require('../models/post');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const fs = require('fs');
+
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -25,18 +27,25 @@ router.post('/new-post', (req, res) => {
         });
     }
 
+    req.body.deletedImages.forEach(image => {
+        fs.unlink(image, err => {
+            if (err) throw err;
+            console.log("Image deleted: " + image);
+        })
+    })
+
     const post = new Post({
         writer: req.session.loginInfo.userid,
         title: req.body.post.title,
         content: req.body.post.content,
-        start: new Date(req.body.post.start),
-        end: new Date(req.body.post.end),
+        start: new Date(req.body.post.period.start),
+        end: new Date(req.body.post.period.end),
     });
 
-    post.save((err) => {
+    post.save((err, post) => {
         if (err) throw err;
 
-        res.json({ success: true });
+        res.json({ id: post._id });
     })
 });
 
@@ -85,7 +94,7 @@ router.get('/:id', (req, res) => {
     Post.findById(req.params.id, (err, post) => {
         if (err) return err;
 
-        res.json(post);
+        res.json({ post });
     });
 });
 

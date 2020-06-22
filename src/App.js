@@ -7,6 +7,7 @@ import Main from './components/Main';
 import Header from './components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import WritePost from './components/WritePost';
+import PostDetail from './components/PostDetail';
 
 class App extends Component {
 
@@ -43,6 +44,7 @@ class App extends Component {
         <Switch>
           <Route path="/login" component={Authentication}></Route>
           <Route path="/new-diary" component={WritePost}></Route>
+          <Route path="/diary/:id" component={PostDetail}></Route>
         </Switch>
       </div>
     );

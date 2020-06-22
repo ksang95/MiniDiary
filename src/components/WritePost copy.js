@@ -40,7 +40,7 @@ class WritePost extends Component {
         }),
         imageList: [],
         error: '',
-        value: null
+        value:''
     }
 
     quill = null;
@@ -54,13 +54,13 @@ class WritePost extends Component {
 
     handleStartDateChange = (date) => {
         this.setState({
-            post: this.state.post.setIn(['period', 'start'], date)
+            post: this.state.post.setIn(['period','start'], date)
         });
     }
 
     handleEndDateChange = (date) => {
         this.setState({
-            post: this.state.post.setIn(['period', 'end'], date)
+            post: this.state.post.setIn(['period','end'], date)
         });
     }
 
@@ -74,7 +74,7 @@ class WritePost extends Component {
         // console.log(editor.getHTML());
         // console.log(editor.getContents());
         this.setState({
-            post: this.state.post.set('content', content)
+            value:  content
         });
     }
 
@@ -100,11 +100,11 @@ class WritePost extends Component {
             .then(() => {
                 if (this.props.create.status === 'FAILURE') {
                     this.setState({
-                        error: '로그인이 되어있지 않습니다.'
+                        error: '로그인부터 해주세요.'
                     });
                 }
                 else {
-                    this.props.history.push(`/diary/${this.props.create.id}`);
+                    this.props.history.push(`/post/${this.props.create.id}`);
                 }
             });
 
@@ -139,26 +139,26 @@ class WritePost extends Component {
                     ['clean']
                 ],
             },
-            // imageUpload: { //이거 적용하면서 에디터 내에서 이미지 드래그앤드롭이 안됨
-            //     url: "/api/post/new-post/resource", // server url
-            //     method: "POST", // change query method, default 'POST'
-            //     name: 'images', // 아래 설정으로 image upload form의 key 값을 변경할 수 있다.
-            //     callbackOK: (serverResponse, next) => { // 성공하면 리턴되는 함수
-            //         next(serverResponse.fileURL);
-            //         this.addImage(serverResponse.fileURL);
-            //         // this.quill.insertEmbed(10, 'image', serverResponse.fileURL);
-            //     },
-            //     callbackKO: (serverError) => { // 실패하면 리턴되는 함수
-            //         console.log(serverError);
-            //         // alert(serverError);
-            //     },
-            //     // optional
-            //     // add callback when a image have been chosen
-            //     checkBeforeSend: (file, next) => {
-            //         console.log(file);
-            //         next(file); // go back to component and send to the server
-            //     }
-            // },
+            imageUpload: { //이거 적용하면서 에디터 내에서 이미지 드래그앤드롭이 안됨
+                url: "/api/post/new-post/resource", // server url
+                method: "POST", // change query method, default 'POST'
+                name: 'images', // 아래 설정으로 image upload form의 key 값을 변경할 수 있다.
+                callbackOK: (serverResponse, next) => { // 성공하면 리턴되는 함수
+                    next(serverResponse.fileURL);
+                    this.addImage(serverResponse.fileURL);
+                    // this.quill.insertEmbed(10, 'image', serverResponse.fileURL);
+                },
+                callbackKO: (serverError) => { // 실패하면 리턴되는 함수
+                    console.log(serverError);
+                    // alert(serverError);
+                },
+                // optional
+                // add callback when a image have been chosen
+                checkBeforeSend: (file, next) => {
+                    console.log(file);
+                    next(file); // go back to component and send to the server
+                }
+            },
             clipboard: {
                 // toggle to add extra line breaks when pasting HTML:
                 matchVisual: false,
@@ -209,6 +209,7 @@ class WritePost extends Component {
                     value={title} onChange={this.handleTitleChange} autoFocus></input>
                 <div>
                     <ReactQuill
+                        ref={ref => { this.quill = ref; }}
                         theme="snow"
                         modules={modules}
                         formats={formats}
@@ -231,8 +232,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        createRequest: (post, deletedImages) => {
-            return dispatch(createRequest(post, deletedImages));
+        createRequest: (post) => {
+            return dispatch(createRequest(post));
         }
     }
 };
