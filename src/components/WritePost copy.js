@@ -6,12 +6,15 @@ import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.bubble.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Record } from 'immutable';
+import { Record, List } from 'immutable';
 import { Button } from 'react-bootstrap';
 import ImageResize from 'quill-image-resize-module';
 import { ImageDrop } from 'quill-image-drop-module';
 import { connect } from 'react-redux'
 import { createRequest } from '../actions/post';
+import { CirclePicker } from 'react-color';
+import './writePost.css';
+import moment from 'moment';
 
 Quill.register('modules/imageUpload', ImageUpload);
 Quill.register('modules/imageResize', ImageResize);
@@ -22,20 +25,23 @@ const Post = new Record({
     start: '',
     end: '',
     title: '',
-    content: null
+    content: '',
+    color: '',
+    files: List()
 })
 
 class WritePost extends Component {
     state = {
         post: Post({
-            start: '2020-01-01',
-            end: '2020-01-01',
+            start: null,
+            end: null,
             title: '',
-            content: null
+            content: '',
+            color: '#2ccce4',
+            files: List()
         }),
         imageList: [],
         error: '',
-        value: ''
     }
 
     quill = null;
@@ -43,20 +49,19 @@ class WritePost extends Component {
     componentDidMount() {
         const period = queryString.parse(this.props.location.search);
         this.setState({
-            post: this.state.post.set('start', period.start),
-            post: this.state.post.set('end', period.end)
+            post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() })
         });
     }
 
     handleStartDateChange = (date) => {
         this.setState({
-            post: this.state.post.set('start', date)
+            post: this.state.post.set('start', moment(date).toISOString())
         });
     }
 
     handleEndDateChange = (date) => {
         this.setState({
-            post: this.state.post.set('end', date)
+            post: this.state.post.set('end', moment(date).toISOString())
         });
     }
 
@@ -66,41 +71,47 @@ class WritePost extends Component {
         });
     }
 
+    handleColorChange = (color) => {
+        this.setState({
+            post: this.state.post.set('color', color.hex)
+        });
+    }
+
     handleContentChange = (content, delta, source, editor) => {
         // console.log(editor.getHTML());
         // console.log(editor.getContents());
         this.setState({
-            value: content
+            post: this.state.post.set('content', content)
         });
     }
 
     handleSubmit = (e) => {
-        const post = this.state.post;
-
+        const post = this.state.post.toJS();
+        console.log(post)
         if (post.title === '') {
             return this.setState({
                 error: '제목을 입력하세요.'
             })
         }
 
-
-        const deletedImages = this.state.imageList.filter(image => {
+        const deletedFiles = this.state.imageList.filter(image => {
             if (post.content.includes(image)) {
+                post.files.push(image);
                 return false;
             }
             return true;
         });
 
         //쓰지않는 이미지 삭제, 내용물 보내기
-        this.props.createRequest(post, deletedImages)
+        this.props.createRequest(post, deletedFiles)
             .then(() => {
                 if (this.props.create.status === 'FAILURE') {
                     this.setState({
-                        error: '로그인부터 해주세요.'
+                        error: '로그인이 되어있지 않습니다.'
                     });
                 }
                 else {
-                    this.props.history.push(`/post/${this.props.create.id}`);
+                    this.props.history.push(`/diary/${this.props.create.id}`);
                 }
             });
 
@@ -117,7 +128,8 @@ class WritePost extends Component {
 
 
     render() {
-        const { start, end, title, content } = this.state.post;
+        const { start, end, title, content, color } = this.state.post;
+
         const startDate = new Date(start);
         const endDate = new Date(end);
 
@@ -135,26 +147,26 @@ class WritePost extends Component {
                     ['clean']
                 ],
             },
-            imageUpload: { //이거 적용하면서 에디터 내에서 이미지 드래그앤드롭이 안됨
-                url: "/api/post/new-post/resource", // server url
-                method: "POST", // change query method, default 'POST'
-                name: 'images', // 아래 설정으로 image upload form의 key 값을 변경할 수 있다.
-                callbackOK: (serverResponse, next) => { // 성공하면 리턴되는 함수
-                    next(serverResponse.fileURL);
-                    this.addImage(serverResponse.fileURL);
-                    // this.quill.insertEmbed(10, 'image', serverResponse.fileURL);
-                },
-                callbackKO: (serverError) => { // 실패하면 리턴되는 함수
-                    console.log(serverError);
-                    // alert(serverError);
-                },
-                // optional
-                // add callback when a image have been chosen
-                checkBeforeSend: (file, next) => {
-                    console.log(file);
-                    next(file); // go back to component and send to the server
-                }
-            },
+            // imageUpload: { //이거 적용하면서 에디터 내에서 이미지 드래그앤드롭이 안됨
+            //     url: "/api/post/new-post/resource", // server url
+            //     method: "POST", // change query method, default 'POST'
+            //     name: 'images', // 아래 설정으로 image upload form의 key 값을 변경할 수 있다.
+            //     callbackOK: (serverResponse, next) => { // 성공하면 리턴되는 함수
+            //         next(serverResponse.fileURL);
+            //         this.addImage(serverResponse.fileURL);
+            //         // this.quill.insertEmbed(10, 'image', serverResponse.fileURL);
+            //     },
+            //     callbackKO: (serverError) => { // 실패하면 리턴되는 함수
+            //         console.log(serverError);
+            //         // alert(serverError);
+            //     },
+            //     // optional
+            //     // add callback when a image have been chosen
+            //     checkBeforeSend: (file, next) => {
+            //         console.log(file);
+            //         next(file); // go back to component and send to the server
+            //     }
+            // },
             clipboard: {
                 // toggle to add extra line breaks when pasting HTML:
                 matchVisual: false,
@@ -176,6 +188,10 @@ class WritePost extends Component {
             'list', 'bullet', 'indent', 'align',
             'link', 'image', 'video'
         ];
+
+        const backgroundStyle = {
+            background: color,
+        };
 
         return (
             <div className="WritePost" >
@@ -203,15 +219,23 @@ class WritePost extends Component {
                 <label htmlFor="title">TITLE :</label>
                 <input type="text" id="title" name="title"
                     value={title} onChange={this.handleTitleChange} autoFocus></input>
+
                 <div>
                     <ReactQuill
-                        ref={ref => { this.quill = ref; }}
                         theme="snow"
                         modules={modules}
                         formats={formats}
                         defaultValue={content}
                         onChange={this.handleContentChange}
                     />
+                </div>
+                <div>
+                    <div>제목 배경 색상
+                    <div className='title-background-example' style={backgroundStyle}>Title</div>
+                    </div>
+                    <CirclePicker color={color} onChangeComplete={this.handleColorChange}
+                        colors={['#c4def6', '#F47373', '#697689', '#37D67A', '#2CCCE4', '#555555',
+                            '#dce775', '#ff8a65', '#ba68c8', '#FCB900', '#8BC34A']} />
                 </div>
                 <Button onClick={this.handleSubmit}>Create</Button>
 
@@ -228,8 +252,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        createRequest: (post) => {
-            return dispatch(createRequest(post));
+        createRequest: (post, deletedFiles) => {
+            return dispatch(createRequest(post, deletedFiles));
         }
     }
 };

@@ -37,7 +37,7 @@ class Main extends Component {
                             return {
                                 ...post,
                                 start: new Date(post.start),
-                                end: new Date(moment(post.end).add('1','s').toISOString()),
+                                end: new Date(moment(post.end).add('1', 's').toISOString()),
                                 allDay: true
                             }
                         })
@@ -60,8 +60,8 @@ class Main extends Component {
     handleRange = (dates) => {
         if (dates.start)
             this.getPostList(dates.start, dates.end);
-        else 
-            this.getPostList(dates[0],dates[dates.length-1])
+        else
+            this.getPostList(dates[0], dates[dates.length - 1])
     }
 
     handleEventClick = (event) => {
@@ -107,6 +107,17 @@ class Main extends Component {
                             }
                         }
                     }
+                   dayPropGetter={
+                       (date)=>{
+                           return {
+                               className:'calendar-day',
+                               style:{
+                                    cursor:'pointer'
+                               }
+                           }
+                       }
+                   }
+
                 ></Calendar>
                 <Modal show={isSlotSelected} onHide={this.handleClose} centered>
                     <Modal.Header closeButton>
