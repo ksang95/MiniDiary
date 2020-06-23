@@ -15,6 +15,10 @@ const initialState = {
         status: 'INIT',
         error: -1,
         list: []
+    },
+    delete: {
+        status: 'INIT',
+        error: -1
     }
 };
 
@@ -79,6 +83,25 @@ export default function authentication(state, action) {
             return update(state, {
                 getByUser: {
                     status: { $set: 'FAILURE' }
+                }
+            });
+        case types.POST_DELETE:
+            return update(state, {
+                delete: {
+                    status: { $set: 'WAITING' }
+                }
+            });
+        case types.POST_DELETE_SUCCESS:
+            return update(state, {
+                delete: {
+                    status: { $set: 'SUCCESS' }
+                }
+            });
+        case types.POST_DELETE_FAILURE:
+            return update(state, {
+                delete: {
+                    status: { $set: 'FAILURE' },
+                    error: { $set: action.code }
                 }
             });
         default:

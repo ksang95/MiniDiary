@@ -1,15 +1,16 @@
 import {
     POST_CREATE, POST_CREATE_FAILURE, POST_CREATE_SUCCESS,
     POST_GET_BY_ID, POST_GET_BY_ID_FAILURE, POST_GET_BY_ID_SUCCESS,
-    POST_GET_BY_USER, POST_GET_BY_USER_FAILURE, POST_GET_BY_USER_SUCCESS
+    POST_GET_BY_USER, POST_GET_BY_USER_FAILURE, POST_GET_BY_USER_SUCCESS,
+    POST_DELETE, POST_DELETE_SUCCESS, POST_DELETE_FAILURE
 } from './ActionTypes';
 import axios from 'axios';
 
-export function createRequest(post, deletedImages) {
+export function createRequest(post, deletedFiles) {
     return (dispatch) => {
         dispatch(create());
 
-        return axios.post('/api/post/new-post', { post, deletedImages })
+        return axios.post('/api/post/new-post', { post, deletedFiles })
             .then((response) => {
                 dispatch(createSuccess(response.data.id));
             }).catch((error) => {
@@ -99,5 +100,37 @@ export function getByUserSuccess(list) {
 export function getByUserFailure() {
     return {
         type: POST_GET_BY_USER_FAILURE,
+    };
+};
+
+export function deletePostRequest(id) {
+    return (dispatch) => {
+        dispatch(deletePost());
+
+        return axios.delete(`/api/post/${id}`)
+            .then((response) => {
+                dispatch(deletePostSuccess());
+            }).catch((error) => {
+                dispatch(deletePostFailure(error.response.data.code));
+            })
+    }
+};
+
+export function deletePost() {
+    return {
+        type: POST_DELETE
+    };
+};
+
+export function deletePostSuccess() {
+    return {
+        type: POST_DELETE_SUCCESS
+    };
+};
+
+export function deletePostFailure(code) {
+    return {
+        type: POST_DELETE_FAILURE,
+        code
     };
 };

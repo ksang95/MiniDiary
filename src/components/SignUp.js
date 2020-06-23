@@ -52,7 +52,7 @@ class SignUp extends Component {
                         userid: user.userid
                     };
                     document.cookie = 'user=' + btoa(JSON.stringify(loginData));
-                    // this.props.getInfoRequest();
+                    this.props.getInfoRequest();
                     this.props.history.push('/');
                 }
             });

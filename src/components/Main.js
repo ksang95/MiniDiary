@@ -23,13 +23,10 @@ class Main extends Component {
         let today = new Date();
         let start = new Date(today.getFullYear(), today.getMonth(), 1);
         let end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
         this.getPostList(start, end);
     }
 
     getPostList = (start, end) => {
-        console.log('start: '+start);
-        console.log('end: '+end);
 
         this.props.getPostListRequest(start, end)
             .then(() => {
@@ -40,7 +37,7 @@ class Main extends Component {
                             return {
                                 ...post,
                                 start: new Date(post.start),
-                                end: new Date(post.end),
+                                end: new Date(moment(post.end).add('1','s').toISOString()),
                                 allDay: true
                             }
                         })
@@ -118,6 +115,7 @@ class Main extends Component {
                     </Modal.Header>
                     <Modal.Body>
                         <PostList
+                            history={this.props.history}
                             slotInfo={slotInfo}
                         ></PostList></Modal.Body>
                     <Modal.Footer>

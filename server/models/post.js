@@ -9,6 +9,7 @@ const Post = new Schema({
     color: String,
     start: Date,
     end: Date,
+    files: [String],
     created: { type: Date, default: Date.now }
 });
 

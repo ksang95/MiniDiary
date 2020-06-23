@@ -6,7 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.bubble.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Record } from 'immutable';
+import { Record, List } from 'immutable';
 import { Button } from 'react-bootstrap';
 import ImageResize from 'quill-image-resize-module';
 import { ImageDrop } from 'quill-image-drop-module';
@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import { createRequest } from '../actions/post';
 import { CirclePicker } from 'react-color';
 import './writePost.css';
+import moment from 'moment';
 
 Quill.register('modules/imageUpload', ImageUpload);
 Quill.register('modules/imageResize', ImageResize);
@@ -25,7 +26,8 @@ const Post = new Record({
     end: '',
     title: '',
     content: '',
-    color: ''
+    color: '',
+    files: List()
 })
 
 class WritePost extends Component {
@@ -35,7 +37,8 @@ class WritePost extends Component {
             end: null,
             title: '',
             content: '',
-            color: '#2ccce4'
+            color: '#2ccce4',
+            files: List()
         }),
         imageList: [],
         error: '',
@@ -46,19 +49,19 @@ class WritePost extends Component {
     componentDidMount() {
         const period = queryString.parse(this.props.location.search);
         this.setState({
-            post: this.state.post.merge({ start: period.start, end: period.end })
+            post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() })
         });
     }
 
     handleStartDateChange = (date) => {
         this.setState({
-            post: this.state.post.set('start', date)
+            post: this.state.post.set('start', moment(date).toISOString())
         });
     }
 
     handleEndDateChange = (date) => {
         this.setState({
-            post: this.state.post.set('end', date)
+            post: this.state.post.set('end', moment(date).toISOString())
         });
     }
 
@@ -83,24 +86,24 @@ class WritePost extends Component {
     }
 
     handleSubmit = (e) => {
-        const post = this.state.post;
-
+        const post = this.state.post.toJS();
+        console.log(post)
         if (post.title === '') {
             return this.setState({
                 error: '제목을 입력하세요.'
             })
         }
 
-
-        const deletedImages = this.state.imageList.filter(image => {
+        const deletedFiles = this.state.imageList.filter(image => {
             if (post.content.includes(image)) {
+                post.files.push(image);
                 return false;
             }
             return true;
         });
 
         //쓰지않는 이미지 삭제, 내용물 보내기
-        this.props.createRequest(post, deletedImages)
+        this.props.createRequest(post, deletedFiles)
             .then(() => {
                 if (this.props.create.status === 'FAILURE') {
                     this.setState({
@@ -126,6 +129,7 @@ class WritePost extends Component {
 
     render() {
         const { start, end, title, content, color } = this.state.post;
+
         const startDate = new Date(start);
         const endDate = new Date(end);
 
@@ -248,8 +252,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        createRequest: (post, deletedImages) => {
-            return dispatch(createRequest(post, deletedImages));
+        createRequest: (post, deletedFiles) => {
+            return dispatch(createRequest(post, deletedFiles));
         }
     }
 };

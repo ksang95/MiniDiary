@@ -10,7 +10,7 @@ class PostList extends Component {
 
     componentDidMount() {
         const {startDate:start, endDate:end} = this.props.slotInfo;
-        console.log(this.props.slotInfo)
+        
         //해당 기간의 다이어리 목록 가져오기
         this.props.getPostListRequest(start, end)
             .then(() => {
@@ -24,7 +24,7 @@ class PostList extends Component {
     }
 
     render() {
-        const titles = this.state.list.map(post => <Post key={post._id} post={post}></Post>)
+        const titles = this.state.list.map(post => <Post key={post._id} post={post} history={this.props.history}></Post>)
         return (
             <div className="PostList">
                 {titles}

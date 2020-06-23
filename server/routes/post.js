@@ -3,6 +3,7 @@ const Post = require('../models/post');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const fs = require('fs');
+const moment = require('moment');
 
 const router = express.Router();
 const storage = multer.diskStorage({
@@ -27,12 +28,14 @@ router.post('/new-post', (req, res) => {
         });
     }
 
-    req.body.deletedImages.forEach(image => {
-        fs.unlink(image, err => {
+    req.body.deletedFiles.forEach(file => {
+        fs.unlink(file, err => {
             if (err) throw err;
-            console.log("Image deleted: " + image);
+
+            console.log("File deleted: " + file);
         })
     })
+    console.log(req.body.post.start)
 
     const post = new Post({
         writer: req.session.loginInfo.userid,
@@ -41,7 +44,10 @@ router.post('/new-post', (req, res) => {
         color: req.body.post.color,
         start: new Date(req.body.post.start),
         end: new Date(req.body.post.end),
+        files: req.body.post.files
     });
+
+    console.log(req.body.post.files)
 
     post.save((err, post) => {
         if (err) throw err;
@@ -82,7 +88,7 @@ router.get('/my-posts', (req, res) => {
                 }
             ]
         },
-        { content: false })
+        { content: false, files: false })
         .sort({ start: 1 })
         .exec((err, posts) => {
             if (err) return err;
@@ -118,7 +124,33 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
+    if (typeof req.session.loginInfo === 'undefined') {
+        return res.status(403).json({
+            error: "NOT LOGGED IN",
+            code: 1
+        });
+    };
 
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+            error: "INVALID POST ID",
+            code: 2
+        });
+    };
+
+    Post.findOneAndDelete({ _id: req.params.id }, (err, post) => {
+        if (err) return err;
+
+        post.files.forEach(file => {
+            fs.unlink(file, err => {
+                if (err) throw err;
+
+                console.log("File deleted: " + file);
+            });
+        })
+
+        res.json({ success: true })
+    });
 });
 
 router.put('/:id/resource', (req, res) => {

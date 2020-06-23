@@ -22,14 +22,14 @@ class Header extends Component {
         const loggedInHeader = (<Navbar bg="dark" variant="dark">
             <Navbar.Brand href="/" className="ml-2 mr-auto">
                 <span>{`${this.props.nickname}'s Diary`}</span>
-                <span className={'logged-in-brand'}>My Diary</span>
+                <span className={'logged-in-brand'}>My MiniDiary</span>
             </Navbar.Brand>
             <Button onClick={this.handleLogout} className="mr-2">로그아웃</Button>
         </Navbar>);
 
         const loggedOutHeader = (<Navbar bg="dark" variant="dark">
             <Navbar.Brand href="/" className="ml-2 mr-auto">
-                <span className={'logged-out-brand'}>My Diary</span>
+                <span className={'logged-out-brand'}>My MiniDiary</span>
             </Navbar.Brand>
             <Link to="/login" className="mr-2"><Button>로그인</Button></Link>
         </Navbar>);
