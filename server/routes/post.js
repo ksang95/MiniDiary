@@ -54,8 +54,8 @@ router.post('/new-post', (req, res) => {
 
 router.post('/new-resource', upload.single('file'), (req, res) => {
     // res.send('Uploaded!: '+req.file);
-    
-    res.json({ fileURL: '/static/upload/' + req.file.filename });
+
+    res.json({ fileURL: '/upload/' + req.file.filename });
 });
 
 router.get('/my-posts', (req, res) => {
