@@ -55,9 +55,9 @@
   },
   "scripts": {
     "start": "node server/main.js",
-    "build": "react-app-rewired build",
+    "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "client": "react-app-rewired start",
+    "client": "react-scripts start",
     "server": "nodemon server/main.js",
     "dev": "concurrently \"yarn server\" \"yarn client\" ",
     "heroku-postbuild": "yarn build"

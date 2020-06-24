@@ -71,11 +71,8 @@ const presetColors = [
 class DiaryEditor extends Component {
 
     handleImage = (url) => {
-        console.log(1+url)
         this.props.handleChange(imagePlugin.addImage(this.props.editorState, url));
-        console.log(2)
         this.props.addImage(url);
-        console.log(3)
     }
 
     picker = colorPickerPlugin(this.props.handleChange, () => this.props.editorState);
