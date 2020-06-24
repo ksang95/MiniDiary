@@ -7,7 +7,7 @@ const fs = require('fs');
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/upload/')
+        cb(null, 'upload/')
     },
     filename: function (req, file, cb) {
         // let temp = 'image';
@@ -28,7 +28,7 @@ router.post('/new-post', (req, res) => {
     }
 
     req.body.deletedFiles.forEach(file => {
-        fs.unlink('./public' + file, err => {
+        fs.unlink('.' + file, err => {
             if (err) throw err;
 
             console.log("File deleted: " + file);
@@ -130,7 +130,7 @@ router.put('/:id', (req, res) => {
     };
 
     req.body.deletedFiles.forEach(file => {
-        fs.unlink('./public' + file, err => {
+        fs.unlink('.' + file, err => {
             if (err) throw err;
 
             console.log("File deleted: " + file);
@@ -169,7 +169,7 @@ router.delete('/:id', (req, res) => {
         if (err) throw err;
 
         post.files.forEach(file => {
-            fs.unlink('./public' + file, err => {
+            fs.unlink('.' + file, err => {
                 if (err) throw err;
 
                 console.log("File deleted: " + file);
