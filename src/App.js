@@ -43,7 +43,8 @@ class App extends Component {
         <Route exact path="/" component={Main}></Route>
         <Switch>
           <Route path="/login" component={Authentication}></Route>
-          <Route path="/new-diary" component={WritePost}></Route>
+          <Route path="/diary/new" component={WritePost}></Route>
+          <Route path="/diary/update" component={WritePost}></Route>
           <Route path="/diary/:id" component={PostDetail}></Route>
         </Switch>
       </div>

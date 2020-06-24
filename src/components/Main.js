@@ -131,7 +131,7 @@ class Main extends Component {
                         ></PostList></Modal.Body>
                     <Modal.Footer>
                         {isLoggedIn ?
-                            <Link to={`/new-diary?start=${start}&end=${end}`}>
+                            <Link to={`/diary/new?start=${start}&end=${end}`}>
                                 <Button variant="primary">
                                     New diary
                             </Button>

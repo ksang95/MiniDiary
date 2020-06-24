@@ -4,7 +4,6 @@ import createToolbarPlugin, { Separator } from 'draft-js-static-toolbar-plugin';
 import 'draft-js/dist/Draft.css';
 import 'draft-js-static-toolbar-plugin/lib/plugin.css';
 import ColorPicker, { colorPickerPlugin } from 'draft-js-color-picker';
-import { stateToHTML } from 'draft-js-export-html';
 import createEmojiPlugin from 'draft-js-emoji-plugin';
 import 'draft-js-emoji-plugin/lib/plugin.css';
 import createImagePlugin from 'draft-js-image-plugin';
@@ -18,6 +17,7 @@ import {
     ItalicButton,
     BoldButton,
     UnderlineButton,
+    CodeButton,
     HeadlineOneButton,
     HeadlineTwoButton,
     HeadlineThreeButton,
@@ -25,19 +25,14 @@ import {
     OrderedListButton,
     BlockquoteButton,
     CodeBlockButton,
-    AlignBlockCenterButton,
-    AlignBlockLeftButton,
-    AlignBlockDefaultButton,
-    AlignBlockRightButton,
 } from 'draft-js-buttons';
 import ImageAdd from './ImageAdd';
-
+import './diaryEditor.css';
 
 const toolbarPlugin = createToolbarPlugin();
 const { Toolbar } = toolbarPlugin;
 const emojiPlugin = createEmojiPlugin({ useNativeArt: true });
 const { EmojiSuggestions, EmojiSelect } = emojiPlugin;
-const imagePlugin = createImagePlugin();
 const focusPlugin = createFocusPlugin();
 const resizeablePlugin = createResizeablePlugin();
 const blockDndPlugin = createBlockDndPlugin();
@@ -50,6 +45,7 @@ const decorator = composeDecorators(
     focusPlugin.decorator,
     blockDndPlugin.decorator
 );
+const imagePlugin = createImagePlugin({ decorator });
 
 const plugins = [toolbarPlugin, emojiPlugin, imagePlugin,
     blockDndPlugin, focusPlugin, alignmentPlugin, resizeablePlugin];
@@ -73,78 +69,81 @@ const presetColors = [
 ];
 
 class DiaryEditor extends Component {
-    state = {
 
-    }
-
-    handleChange = (editorState) => {
-        console.log(editorState.toJS())
-        const inlineStyles = this.picker.exporter(editorState);
-        const html = stateToHTML(editorState.getCurrentContent(), { inlineStyles });
-        console.log(html)
-
-        this.props.onChange(editorState, html);
-    }
-
-    handleImage = (url)=>{
-        imagePlugin.addImage(this.props.editorState, url);
+    handleImage = (url) => {
+        console.log(1+url)
+        this.props.handleChange(imagePlugin.addImage(this.props.editorState, url));
+        console.log(2)
         this.props.addImage(url);
+        console.log(3)
     }
 
-    picker = colorPickerPlugin(this.props.onChange, () => this.props.editorState);
+    picker = colorPickerPlugin(this.props.handleChange, () => this.props.editorState);
+
+    myBlockStyleFn = (contentBlock) => {
+        const type = contentBlock.getType();
+        switch (type) {
+            case 'blockquote':
+                return 'diary-blockquote';
+            case 'code':
+                return 'diary-code';
+            case 'atomic':
+                return 'diary-editor-image-container';
+        }
+    }
 
     render() {
-        //blockquote 태그, code 태그 style 바꿀것
-
         return (
             <div className="DiaryEditor">
-                <Toolbar>
-                    {
-                        // may be use React.Fragment instead of div to improve perfomance after React 16
-                        (externalProps) => (
-                            <div>
-                                <BoldButton {...externalProps} />
-                                <ItalicButton {...externalProps} />
-                                <UnderlineButton {...externalProps} />
-                                <Separator {...externalProps} />
-                                <HeadlineOneButton {...externalProps} />
-                                <HeadlineTwoButton {...externalProps} />
-                                <HeadlineThreeButton {...externalProps} />
-                                <UnorderedListButton {...externalProps} />
-                                <OrderedListButton {...externalProps} />
-                                <BlockquoteButton {...externalProps} />
-                                <CodeBlockButton {...externalProps} />
-                                <Separator {...externalProps} />
-                                <AlignBlockCenterButton {...externalProps} />
-                                <AlignBlockLeftButton {...externalProps} />
-                                <AlignBlockDefaultButton {...externalProps} />
-                                <AlignBlockRightButton {...externalProps} />
-                                <Separator {...externalProps} />
-                                <div className='diary-editor-color-picker-container'>
-                                    <ColorPicker
-                                        toggleColor={color => this.picker.addColor(color)}
-                                        presetColors={presetColors}
-                                        color={this.picker.currentColor(this.props.editorState) || 'black'}
-                                    />
-                                </div>
-                                <EmojiSuggestions />
-                                <EmojiSelect />
-                                <ImageAdd
-                                    editorState={this.props.editorState}
-                                    onChange={this.handleChange}
-                                    modifier={this.handleImage}
-                                />
-                            </div>
-                        )
-                    }
-                </Toolbar>
+                {
+                    this.props.readOnly ? '' :
+                        <Toolbar>
+                            {
+                                // may be use React.Fragment instead of div to improve perfomance after React 16
+                                (externalProps) => (
+                                    <div>
+                                        <BoldButton {...externalProps} />
+                                        <ItalicButton {...externalProps} />
+                                        <UnderlineButton {...externalProps} />
+                                        <CodeButton {...externalProps} />
+                                        <Separator {...externalProps} />
+                                        <HeadlineOneButton {...externalProps} />
+                                        <HeadlineTwoButton {...externalProps} />
+                                        <HeadlineThreeButton {...externalProps} />
+                                        <UnorderedListButton {...externalProps} />
+                                        <OrderedListButton {...externalProps} />
+                                        <BlockquoteButton {...externalProps} />
+                                        <CodeBlockButton {...externalProps} />
+                                        <Separator {...externalProps} />
+                                        <div className='diary-editor-color-picker-container'>
+                                            <ColorPicker
+                                                toggleColor={color => this.picker.addColor(color)}
+                                                presetColors={presetColors}
+                                                color={this.picker.currentColor(this.props.editorState) || 'black'}
+                                            />
+                                        </div>
+                                        <EmojiSuggestions />
+                                        <EmojiSelect />
+                                        <ImageAdd
+                                            editorState={this.props.editorState}
+                                            onChange={this.props.handleChange}
+                                            modifier={this.handleImage}
+                                        />
+                                    </div>
+                                )
+                            }
+                        </Toolbar>
+                }
                 <div className="diary-editor-container">
                     <Editor editorState={this.props.editorState}
-                        onChange={this.handleChange}
+                        onChange={this.props.handleChange}
                         plugins={plugins}
                         customStyleFn={this.picker.customStyleFn}
+                        blockStyleFn={this.myBlockStyleFn}
+                        readOnly={this.props.readOnly}
                     />
                     <AlignmentTool />
+                    <div className='diary-editor-blank'></div>
                 </div>
             </div>
         );

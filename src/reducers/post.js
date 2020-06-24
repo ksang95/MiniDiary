@@ -19,6 +19,13 @@ const initialState = {
     delete: {
         status: 'INIT',
         error: -1
+    },
+    update: {
+        status: 'INIT',
+        error: -1
+    },
+    file: {
+        url: ''
     }
 };
 
@@ -102,6 +109,31 @@ export default function authentication(state, action) {
                 delete: {
                     status: { $set: 'FAILURE' },
                     error: { $set: action.code }
+                }
+            });
+        case types.POST_UPDATE:
+            return update(state, {
+                update: {
+                    status: { $set: 'WAITING' },
+                }
+            });
+        case types.POST_UPDATE_SUCCESS:
+            return update(state, {
+                update: {
+                    status: { $set: 'SUCCESS' },
+                }
+            });
+        case types.POST_UPDATE_FAILURE:
+            return update(state, {
+                update: {
+                    status: { $set: 'FAILURE' },
+                    error: { $set: action.code }
+                }
+            });
+        case types.FILE_UPLOAD:
+            return update(state, {
+                file: {
+                    url: { $set: action.fileURL }
                 }
             });
         default:

@@ -5,10 +5,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Record, List } from 'immutable';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux'
-import { createRequest, updateRequest } from '../actions/post';
+import { createRequest } from '../actions/post';
 import { CirclePicker } from 'react-color';
 import moment from 'moment';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import { EditorState } from 'draft-js';
 import './writePost.css';
 import DiaryEditor from './DiaryEditor';
 
@@ -24,7 +24,6 @@ const Post = new Record({
 
 class WritePost extends Component {
     state = {
-        isNew: true,
         post: Post({
             start: null,
             end: null,
@@ -39,22 +38,11 @@ class WritePost extends Component {
     }
 
     componentDidMount() {
-        if (this.props.location.pathname === '/diary/new') {
-            const period = queryString.parse(this.props.location.search);
-            this.setState({
-                post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() })
-            });
-        } else {
-            const post = this.props.location.state.post;
-
-            this.setState({
-                isNew: false,
-                post: post,
-                imageList: post.files,
-                editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)))
-            });
-
-        }
+        console.log(this.props.location)
+        const period = queryString.parse(this.props.location.search);
+        this.setState({
+            post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() })
+        });
     }
 
     handleStartDateChange = (date) => {
@@ -81,11 +69,13 @@ class WritePost extends Component {
         });
     }
 
-    handleEditorChange = (editorState) => {
-        this.setState({
+    handleEditorChange = (editorState, html) => {
+        this.setState({ 
+            post: this.state.post.set('content',html),
             editorState
-        });
+         });
     }
+
 
     handleSubmit = (e) => {
         const post = this.state.post.toJS();
@@ -95,8 +85,6 @@ class WritePost extends Component {
                 error: '제목을 입력하세요.'
             })
         }
-        post.content = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
-        post.files = [];
 
         const deletedFiles = this.state.imageList.filter(image => {
             if (post.content.includes(image)) {
@@ -107,39 +95,17 @@ class WritePost extends Component {
         });
 
         //쓰지않는 이미지 삭제, 내용물 보내기
-        if (this.state.isNew) {
-            //다이어리 생성
-            this.props.createRequest(post, deletedFiles)
-                .then(() => {
-                    if (this.props.create.status === 'FAILURE') {
-                        this.setState({
-                            error: '로그인이 되어있지 않습니다.'
-                        });
-                    }
-                    else {
-                        this.props.history.push(`/diary/${this.props.create.id}`);
-                    }
-                });
-        } else {
-            //다이어리 수정
-            this.props.updateRequest(post, deletedFiles)
-                .then(() => {
-                    if (this.props.update.status === 'FAILURE') {
-                        const errorMessage = [
-                            "로그인이 되어있지 않습니다.",
-                            "존재하지 않는 글입니다.",
-                        ];
-
-                        this.setState({
-                            error: errorMessage[this.props.update.error-1]
-                        });
-                    }
-                    else {
-                        this.props.history.push(`/diary/${post._id}`);
-                    }
-                })
-        }
-
+        this.props.createRequest(post, deletedFiles)
+            .then(() => {
+                if (this.props.create.status === 'FAILURE') {
+                    this.setState({
+                        error: '로그인이 되어있지 않습니다.'
+                    });
+                }
+                else {
+                    this.props.history.push(`/diary/${this.props.create.id}`);
+                }
+            });
 
     }
 
@@ -154,9 +120,10 @@ class WritePost extends Component {
 
 
     render() {
-        const { start, end, title, color } = this.state.post;
+        const { start, end, title, content, color } = this.state.post;
         const startDate = new Date(start);
         const endDate = new Date(end);
+
 
         const backgroundStyle = {
             background: color,
@@ -188,7 +155,7 @@ class WritePost extends Component {
                 <label htmlFor="title">TITLE :</label>
                 <input type="text" id="title" name="title"
                     value={title} onChange={this.handleTitleChange} autoFocus></input>
-                <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} addImage={this.addImage} readOnly={false} />
+                <DiaryEditor editorState={this.state.editorState} onChange={this.handleEditorChange} addImage={this.addImage} />
                 <div>
                     <div>제목 배경 색상
                     <div className='title-background-example' style={backgroundStyle}>Title</div>
@@ -206,8 +173,7 @@ class WritePost extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        create: state.post.create,
-        update: state.post.update
+        create: state.post.create
     };
 };
 
@@ -215,9 +181,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         createRequest: (post, deletedFiles) => {
             return dispatch(createRequest(post, deletedFiles));
-        },
-        updateRequest: (post, deletedFiles) => {
-            return dispatch(updateRequest(post, deletedFiles))
         }
     }
 };

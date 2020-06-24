@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { loginRequest } from '../actions/authentication';
 import SignUp from './SignUp';
 import Login from './Login';
 
@@ -27,16 +26,4 @@ class Authentication extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Authentication);
+export default Authentication;

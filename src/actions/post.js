@@ -2,7 +2,8 @@ import {
     POST_CREATE, POST_CREATE_FAILURE, POST_CREATE_SUCCESS,
     POST_GET_BY_ID, POST_GET_BY_ID_FAILURE, POST_GET_BY_ID_SUCCESS,
     POST_GET_BY_USER, POST_GET_BY_USER_FAILURE, POST_GET_BY_USER_SUCCESS,
-    POST_DELETE, POST_DELETE_SUCCESS, POST_DELETE_FAILURE
+    POST_DELETE, POST_DELETE_SUCCESS, POST_DELETE_FAILURE, FILE_UPLOAD, 
+    POST_UPDATE, POST_UPDATE_FAILURE, POST_UPDATE_SUCCESS
 } from './ActionTypes';
 import axios from 'axios';
 
@@ -132,5 +133,58 @@ export function deletePostFailure(code) {
     return {
         type: POST_DELETE_FAILURE,
         code
+    };
+};
+
+export function updateRequest(post, deletedFiles) {
+    return (dispatch) => {
+        dispatch(update());
+
+        return axios.put(`/api/post/${post._id}`, { post, deletedFiles })
+            .then((response) => {
+                dispatch(updateSuccess());
+            }).catch((error) => {
+                dispatch(updateFailure(error.response.data.code));
+            });
+    };
+};
+
+export function update(){
+    return {
+        type: POST_UPDATE
+    };
+};
+
+export function updateSuccess(){
+    return {
+        type: POST_UPDATE_SUCCESS
+    };
+};
+
+export function updateFailure(code){
+    return {
+        type: POST_UPDATE_FAILURE,
+        code
+    };
+}
+
+export function fileUploadRequest(formData) {
+    return (dispatch) => {
+
+        return axios.post('/api/post/new-resource', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then((response) => {
+                dispatch(fileUpload(response.data.fileURL));
+            });
+    };
+};
+
+export function fileUpload(fileURL) {
+    return {
+        type: FILE_UPLOAD,
+        fileURL
     };
 };

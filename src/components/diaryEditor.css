@@ -1,0 +1,31 @@
+.DiaryEditor .diary-editor-container .diary-editor-blank {
+    clear: both;
+}
+
+.diary-blockquote {
+    background: #eee;
+    border-radius: 5px;
+    color: #999;
+    font-family: "Hoefler Text", Georgia, serif;
+    font-style: italic;
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px;
+    width: fit-content;
+}
+
+.diary-blockquote div {
+    text-align: center;
+}
+
+
+.diary-code {
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 3px;
+}
+
+.DiaryEditor .diary-editor-container .diary-editor-image-container img {
+    margin: 20px;
+}

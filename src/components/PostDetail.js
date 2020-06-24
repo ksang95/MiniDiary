@@ -2,16 +2,29 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getByIdRequest, deletePostRequest } from '../actions/post';
 import moment from 'moment';
+import { List, Record } from 'immutable';
+import { Link } from 'react-router-dom';
+import { EditorState, convertFromRaw } from 'draft-js';
+import DiaryEditor from './DiaryEditor';
+
+const Post = new Record({
+    _id: '',
+    writer: '',
+    title: '',
+    content: '',
+    color: '',
+    start: '',
+    end: '',
+    files: List(),
+    created: '',
+})
 
 class PostDetail extends Component {
 
     state = {
-        start: '',
-        end: '',
-        title: '',
-        content: '',
-        color: '',
-        error: ''
+        post: Post(),
+        error: '',
+        editorState: EditorState.createEmpty()
     }
 
     componentDidMount() {
@@ -27,19 +40,22 @@ class PostDetail extends Component {
                         error: errorMessage[this.props.getError - 1]
                     });
                 } else {
-                    const { start, end } = this.props.post;
-
+                    const { start, end, content } = this.props.post;
+                    
                     this.setState({
-                        ...this.props.post,
-                        start: moment(start).format('YYYY-MM-DD'),
-                        end: moment(end).format('YYYY-MM-DD'),
-                    })
+                        post: Post({
+                            ...this.props.post,
+                            start: moment(start).format('YYYY-MM-DD'),
+                            end: moment(end).format('YYYY-MM-DD'),
+                        }),
+                        editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
+                    });
                 }
             })
     }
 
     handleDelete = (e) => {
-        this.props.deletePostRequest(this.state._id)
+        this.props.deletePostRequest(this.state.post._id)
             .then(() => {
                 if (this.props.deleteStatus === 'FAILURE') {
                     const errorMessage = [
@@ -56,20 +72,32 @@ class PostDetail extends Component {
             })
     }
 
+
+    handleEditorChange = (editorState) => {
+        this.setState({
+            editorState
+        });
+    }
+
     render() {
-        const { start, end, title, content, error } = this.state;
+        const { start, end, title, content } = this.state.post;
 
         return (
             <div className="PostDetail">
-                <div>{error}</div>
-                <div>{start === end ?
-                    start : `${start} ~ ${end}`}</div>
-                <div>{title}</div>
-                <div dangerouslySetInnerHTML={{ __html: content }}></div>
-                <div>
-                    <button>수정</button>
-                    <button onClick={this.handleDelete}>삭제</button>
-                </div>
+                {this.state.error.length !== 0 ?
+                    <div>{this.state.error}</div> :
+                    <div>
+                        <div>{start === end ?
+                            start : `${start} ~ ${end}`}</div>
+                        <div>{title}</div>
+                        {/* <div dangerouslySetInnerHTML={{ __html: content }}></div> */}
+                        <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} readOnly={true} />
+                        <div>
+                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post } }} ><button>수정</button></Link>
+                            <button onClick={this.handleDelete}>삭제</button>
+                        </div>
+                    </div>
+                }
             </div>
         );
     }

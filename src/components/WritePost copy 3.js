@@ -5,10 +5,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Record, List } from 'immutable';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux'
-import { createRequest, updateRequest } from '../actions/post';
+import { createRequest } from '../actions/post';
 import { CirclePicker } from 'react-color';
 import moment from 'moment';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
+import { EditorState } from 'draft-js';
 import './writePost.css';
 import DiaryEditor from './DiaryEditor';
 
@@ -38,6 +38,8 @@ class WritePost extends Component {
         editorState: EditorState.createEmpty()
     }
 
+    
+
     componentDidMount() {
         if (this.props.location.pathname === '/diary/new') {
             const period = queryString.parse(this.props.location.search);
@@ -47,11 +49,32 @@ class WritePost extends Component {
         } else {
             const post = this.props.location.state.post;
 
+            // //인라인 색깔 적용
+            // let contentStrings = post.content.split('style=');
+            // contentStrings.forEach(str => {
+            //     let temp = (/rgba\(\d+,\d+,\d+,\d+\)/).exec(str);
+            //     if (temp) {
+            //         this.options.elementStyles['CUSTOM_COLOR_' + temp[0]] = {
+            //             style: { color: temp[0] }
+            //         }
+            //     }
+            // });
+
+            //customInlineFn
+            //customBlockFn
+            // customInlineFn: (element, {Style, Entity}) => {
+            //     if (element.tagName === 'SPAN' && element.className === 'emphasis') {
+            //       return Style('ITALIC');
+            //     } else if (element.tagName === 'IMG') {
+            //       return Entity('IMAGE', {src: element.getAttribute('src')});
+            //     }
+            //   },
+
             this.setState({
                 isNew: false,
                 post: post,
                 imageList: post.files,
-                editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)))
+                editorState: EditorState.createWithContent(post.content)
             });
 
         }
@@ -81,11 +104,13 @@ class WritePost extends Component {
         });
     }
 
-    handleEditorChange = (editorState) => {
+    handleEditorChange = (editorState, html) => {
         this.setState({
+            post: this.state.post.set('content', html),
             editorState
         });
     }
+
 
     handleSubmit = (e) => {
         const post = this.state.post.toJS();
@@ -95,7 +120,6 @@ class WritePost extends Component {
                 error: '제목을 입력하세요.'
             })
         }
-        post.content = JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent()));
         post.files = [];
 
         const deletedFiles = this.state.imageList.filter(image => {
@@ -122,22 +146,7 @@ class WritePost extends Component {
                 });
         } else {
             //다이어리 수정
-            this.props.updateRequest(post, deletedFiles)
-                .then(() => {
-                    if (this.props.update.status === 'FAILURE') {
-                        const errorMessage = [
-                            "로그인이 되어있지 않습니다.",
-                            "존재하지 않는 글입니다.",
-                        ];
 
-                        this.setState({
-                            error: errorMessage[this.props.update.error-1]
-                        });
-                    }
-                    else {
-                        this.props.history.push(`/diary/${post._id}`);
-                    }
-                })
         }
 
 
@@ -154,9 +163,10 @@ class WritePost extends Component {
 
 
     render() {
-        const { start, end, title, color } = this.state.post;
+        const { start, end, title, content, color } = this.state.post;
         const startDate = new Date(start);
         const endDate = new Date(end);
+        console.log(this.state.post.toJS())
 
         const backgroundStyle = {
             background: color,
@@ -188,7 +198,7 @@ class WritePost extends Component {
                 <label htmlFor="title">TITLE :</label>
                 <input type="text" id="title" name="title"
                     value={title} onChange={this.handleTitleChange} autoFocus></input>
-                <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} addImage={this.addImage} readOnly={false} />
+                <DiaryEditor editorState={this.state.editorState} options={this.options} onChange={this.handleEditorChange} addImage={this.addImage} />
                 <div>
                     <div>제목 배경 색상
                     <div className='title-background-example' style={backgroundStyle}>Title</div>
@@ -206,8 +216,7 @@ class WritePost extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        create: state.post.create,
-        update: state.post.update
+        create: state.post.create
     };
 };
 
@@ -215,9 +224,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         createRequest: (post, deletedFiles) => {
             return dispatch(createRequest(post, deletedFiles));
-        },
-        updateRequest: (post, deletedFiles) => {
-            return dispatch(updateRequest(post, deletedFiles))
         }
     }
 };
