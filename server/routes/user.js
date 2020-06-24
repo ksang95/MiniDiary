@@ -12,7 +12,7 @@ router.post('/new-user', (req, res) => {
             code: 1
         });
     }
-
+    
     User.findOne({ userid: req.body.user.userid }, (err, user) => {
         if (err) throw err;
 
@@ -21,25 +21,27 @@ router.post('/new-user', (req, res) => {
                 error: "ID EXISTS",
                 code: 2
             });
+
+        let newUser = new User({
+            ...req.body.user
+        });
+
+        newUser.password = newUser.generateHash(newUser.password);
+
+        newUser.save((err, user) => {
+            if (err) throw err;
+
+            req.session.loginInfo = {
+                _id: user._id,
+                userid: user.userid,
+                nickname: user.nickname
+            }
+
+            res.json({ success: true });
+        });
     });
 
-    let user = new User({
-        ...req.body.user
-    });
 
-    user.password = user.generateHash(user.password);
-
-    user.save((err, user) => {
-        if (err) throw err;
-
-        req.session.loginInfo = {
-            _id: user._id,
-            userid: user.userid,
-            nickname: user.nickname
-        }
-
-        res.json({ success: true });
-    });
 });
 
 router.post('/login', (req, res) => {

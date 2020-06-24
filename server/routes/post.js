@@ -3,8 +3,6 @@ const Post = require('../models/post');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const fs = require('fs');
-const moment = require('moment');
-const path = require('path');
 
 const router = express.Router();
 const storage = multer.diskStorage({
