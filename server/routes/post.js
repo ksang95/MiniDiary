@@ -7,7 +7,7 @@ const fs = require('fs');
 const router = express.Router();
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'upload')
+        cb(null, 'upload/')
     },
     filename: function (req, file, cb) {
         // let temp = 'image';
@@ -55,7 +55,7 @@ router.post('/new-post', (req, res) => {
 router.post('/new-resource', upload.single('file'), (req, res) => {
     // res.send('Uploaded!: '+req.file);
 
-    res.json({ fileURL: '/upload/' + req.file.filename });
+    res.json({ fileURL: 'upload/' + req.file.filename });
 });
 
 router.get('/my-posts', (req, res) => {
