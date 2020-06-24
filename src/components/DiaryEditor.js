@@ -13,6 +13,8 @@ import createFocusPlugin from 'draft-js-focus-plugin';
 import 'draft-js-focus-plugin/lib/plugin.css';
 import createResizeablePlugin from 'draft-js-resizeable-plugin';
 import createBlockDndPlugin from 'draft-js-drag-n-drop-plugin';
+import createVideoPlugin from 'draft-js-video-plugin';
+import 'draft-js-video-plugin/lib/plugin.css';
 import {
     ItalicButton,
     BoldButton,
@@ -28,10 +30,11 @@ import {
 } from 'draft-js-buttons';
 import ImageAdd from './ImageAdd';
 import './diaryEditor.css';
+import VideoAdd from './VideoAdd';
 
 const toolbarPlugin = createToolbarPlugin();
 const { Toolbar } = toolbarPlugin;
-const emojiPlugin = createEmojiPlugin({ useNativeArt: true });
+const emojiPlugin = createEmojiPlugin();
 const { EmojiSuggestions, EmojiSelect } = emojiPlugin;
 const focusPlugin = createFocusPlugin();
 const resizeablePlugin = createResizeablePlugin();
@@ -46,9 +49,11 @@ const decorator = composeDecorators(
     blockDndPlugin.decorator
 );
 const imagePlugin = createImagePlugin({ decorator });
+const videoPlugin = createVideoPlugin({ decorator });
+const { types } = videoPlugin;
 
 const plugins = [toolbarPlugin, emojiPlugin, imagePlugin,
-    blockDndPlugin, focusPlugin, alignmentPlugin, resizeablePlugin];
+    blockDndPlugin, focusPlugin, alignmentPlugin, resizeablePlugin, videoPlugin];
 
 const presetColors = [
     '#ff00aa',
@@ -125,6 +130,11 @@ class DiaryEditor extends Component {
                                             editorState={this.props.editorState}
                                             onChange={this.props.handleChange}
                                             modifier={this.handleImage}
+                                        />
+                                        <VideoAdd
+                                            editorState={this.props.editorState}
+                                            onChange={this.props.handleChange}
+                                            modifier={videoPlugin.addVideo}
                                         />
                                     </div>
                                 )
