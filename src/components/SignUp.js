@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { registerRequest, getInfoRequest } from '../actions/authentication';
+import { Button, Form } from 'react-bootstrap';
 
 
 class SignUp extends Component {
@@ -62,27 +63,32 @@ class SignUp extends Component {
         const { user, error } = this.state;
         return (
             <div className="SignUp">
-                <div>
-                    <label htmlFor="userid">아이디</label>
-                    <input type="text" id="userid" name="userid" value={user.userid}
-                        onChange={this.handleChange} autoFocus></input>
-                </div>
-                <div>
-                    <label htmlFor="nickname">별명</label>
-                    <input type="text" id="nickname" name="nickname" value={user.nickname}
-                        onChange={this.handleChange}></input>
-                </div>
-                <div>
-                    <label htmlFor="password">비밀번호</label>
-                    <input type="password" id="password" name="password"
-                        value={user.password} onChange={this.handleChange}></input>
-                    <span>영문자, 숫자 포함 6자 이상 20자 이하</span>
-                </div>
-                <div><h4>{error}</h4></div>
-                <div>
-                    <button className="submit button"
-                        onClick={this.handleClick}>가입하기</button>
-                </div>
+                <div className="title">SIGN UP</div>
+                <Form>
+                    <Form.Group>
+                        <Form.Label htmlFor="userid">ID</Form.Label>
+                        <Form.Control type="text" id="userid" value={user.userid}
+                            onChange={this.handleChange} autoFocus />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label htmlFor="nickname">NICKNAME</Form.Label>
+                        <Form.Control type="text" id="nickname" value={user.nickname}
+                            onChange={this.handleChange} />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label htmlFor="password">PASSWORD</Form.Label>
+                        <Form.Control type="password" id="password"
+                            value={user.password} onChange={this.handleChange} />
+                        <Form.Text className="text-muted">
+                            영문자, 숫자 포함 6자 이상 20자 이하
+                        </Form.Text>
+                    </Form.Group>
+                    <div className="error-message">{error}</div>
+                    <div className="submit-wrapper">
+                        <Button variant="dark" className="submit"
+                            onClick={this.handleClick}>SIGN UP</Button>
+                    </div>
+                </Form>
             </div>
         );
     }

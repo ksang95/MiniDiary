@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { loginRequest, getInfoRequest } from '../actions/authentication';
+import { Button, FormLabel, Form } from 'react-bootstrap';
 
 class Login extends Component {
     state = {
@@ -42,21 +43,24 @@ class Login extends Component {
     render() {
         return (
             <div className="Login">
-                <div>
-                    <label htmlFor="userid">아이디</label>
-                    <input type="text" id="userid" name="userid" value={this.state.userid}
-                        onChange={this.handleChange} autoFocus></input>
-                </div>
-                <div>
-                    <label htmlFor="password">비밀번호</label>
-                    <input type="password" id="password" name="password"
-                        value={this.state.password} onChange={this.handleChange}></input>
-                </div>
-                <div><h4>{this.state.error}</h4></div>
-                <div>
-                    <button className="submit button"
-                        onClick={this.handleClick}>로그인</button>
-                </div>
+                <div className="title">LOGIN</div>
+                <Form>
+                    <Form.Group>
+                        <Form.Label htmlFor="userid">ID</Form.Label>
+                        <Form.Control type="text" id="userid" value={this.state.userid} 
+                        onChange={this.handleChange} autoFocus />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label htmlFor="password">PASSWORD</Form.Label>
+                        <Form.Control type="password" id="password"
+                            value={this.state.password} onChange={this.handleChange} />
+                    </Form.Group>
+                    <div className="error-message">{this.state.error}</div>
+                    <div className="submit-wrapper">
+                        <Button variant="dark" className="submit"
+                            onClick={this.handleClick}>SIGN IN</Button>
+                    </div>
+                </Form>
             </div>
         );
     }

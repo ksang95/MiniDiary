@@ -108,6 +108,13 @@ class DiaryEditor extends Component {
                                         <ItalicButton {...externalProps} />
                                         <UnderlineButton {...externalProps} />
                                         <CodeButton {...externalProps} />
+                                        <div className='diary-editor-color-picker-container draftJsToolbar__buttonWrapper__1Dmqh'>
+                                            <ColorPicker
+                                                toggleColor={color => this.picker.addColor(color)}
+                                                presetColors={presetColors}
+                                                color={this.picker.currentColor(this.props.editorState) || 'black'}
+                                            />
+                                        </div>
                                         <Separator {...externalProps} />
                                         <HeadlineOneButton {...externalProps} />
                                         <HeadlineTwoButton {...externalProps} />
@@ -117,13 +124,7 @@ class DiaryEditor extends Component {
                                         <BlockquoteButton {...externalProps} />
                                         <CodeBlockButton {...externalProps} />
                                         <Separator {...externalProps} />
-                                        <div className='diary-editor-color-picker-container'>
-                                            <ColorPicker
-                                                toggleColor={color => this.picker.addColor(color)}
-                                                presetColors={presetColors}
-                                                color={this.picker.currentColor(this.props.editorState) || 'black'}
-                                            />
-                                        </div>
+                                        
                                         <EmojiSuggestions />
                                         <EmojiSelect />
                                         <ImageAdd

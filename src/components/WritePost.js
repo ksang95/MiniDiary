@@ -198,7 +198,7 @@ class WritePost extends Component {
                             '#dce775', '#ff8a65', '#ba68c8', '#FCB900', '#8BC34A']} />
                 </div>
                 <div>{this.state.error}</div>
-                <Button onClick={this.handleSubmit}>Create</Button>
+        <Button onClick={this.handleSubmit}>{this.state.isNew?'Create':'Update'}</Button>
 
             </div>
         );

@@ -7,6 +7,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import PostList from './PostList';
 import { Modal, Button } from 'react-bootstrap'
 import { getByUserRequest } from '../actions/post';
+import './calendar.css';
 
 class Main extends Component {
     state = {

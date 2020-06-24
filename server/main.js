@@ -30,7 +30,7 @@ app.use(session({
 }));
 
 app.use('/', express.static(path.join(__dirname, './../build')));
-app.use('/upload', express.static(path.join(__dirname, './../build')));
+app.use('/upload', express.static(path.join(__dirname, './../public')));
 app.use('/api', api);
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, './../build/index.html'));

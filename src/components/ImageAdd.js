@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fileUploadRequest } from '../actions/post';
+import './imageAdd.css';
 
 class ImageAdd extends Component {
     handleChange = (e) => {
@@ -21,8 +22,9 @@ class ImageAdd extends Component {
 
     render() {
         return (
-            <div>
-                <input type="file" name="file" accept="image/*" onChange={this.handleChange} />
+            <div className="ImageAdd draftJsToolbar__buttonWrapper__1Dmqh">
+                <label className="draftJsToolbar__button__qi1gf" for="file"><img src="/iconfinder_icon-image_211677.png"></img></label>
+                <input type="file" id="file" name="file" accept="image/*" onChange={this.handleChange} />
             </div>
         );
     }

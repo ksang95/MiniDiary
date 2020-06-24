@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import SignUp from './SignUp';
 import Login from './Login';
+import { Button } from 'react-bootstrap';
+import './authentication.css';
 
 class Authentication extends Component {
     state = {
@@ -20,7 +22,7 @@ class Authentication extends Component {
                 <div>
                     {this.state.isNew ? <SignUp history={this.props.history}></SignUp> : <Login history={this.props.history}></Login>}
                 </div>
-                <div><button onClick={this.handleClick}> {this.state.isNew ? '로그인':'회원가입' }</button></div>
+                <div style={{textAlign:'end'}}><Button variant="link" onClick={this.handleClick}> {this.state.isNew ? 'Go To login':'Go To Sign Up' }</Button></div>
             </div>
         );
     }

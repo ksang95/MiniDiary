@@ -1,10 +1,49 @@
 import React, { Component } from 'react';
+import './videoAdd.css';
 
 class VideoAdd extends Component {
+    state = {
+        videoURL: '',
+        open: false
+    }
+
+    componentDidMount() {
+        document.addEventListener('click', (e) => {
+            if (e.target.className !== 'VideoAdd' && !(/video-url.*/).test(e.target.className)) {
+                this.setState({
+                    videoURL: '',
+                    open: false
+                })
+            }
+        })
+    }
+
+    handleSubmit = (e) => {
+        if (this.state.videoURL !== '')
+            this.props.onChange(this.props.modifier(this.props.editorState, {src:this.state.videoURL}))
+        this.setState({
+            open: false
+        })
+    }
+
+    handleChange = (e) => {
+        this.setState({
+            videoURL: e.target.value
+        })
+    }
+
+    handleOpen = (e) => {
+        this.setState({
+            videoURL: '',
+            open: !this.state.open
+        })
+    }
+
     render() {
         return (
-            <div>
-                
+            <div className="VideoAdd draftJsToolbar__buttonWrapper__1Dmqh">
+                <button className="video-url-button draftJsToolbar__button__qi1gf" onClick={this.handleOpen}><img className='video-url-image' src='/pngwing.com.png' style={{ width: '20px' }}></img></button>
+                {this.state.open && <div className='video-url-input-wrapper' id='video-url-input-wrapper'><input className='video-url-input' value={this.state.videoURL} onChange={this.handleChange}></input><button className='video-url-input-button' onClick={this.handleSubmit}>입력</button></div>}
             </div>
         );
     }

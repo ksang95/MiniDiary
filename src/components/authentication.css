@@ -1,0 +1,23 @@
+.Authentication{
+    width: 30%;
+    margin: auto;
+    margin-top: 80px;
+}
+
+.Authentication .title {
+    text-align: center;
+    font-size: 30pt;
+}
+
+.Authentication .submit-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    font-size: 10pt;
+    text-align: center;
+    color:rgb(212, 45, 45);
+    height: 20px;
+    margin: 10px;
+}

@@ -8,7 +8,7 @@ const router = express.Router();
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         console.log(__dirname)
-        cb(null, 'upload/')
+        cb(null, 'public/upload/')
     },
     filename: function (req, file, cb) {
         // let temp = 'image';
@@ -29,7 +29,7 @@ router.post('/new-post', (req, res) => {
     }
 
     req.body.deletedFiles.forEach(file => {
-        fs.unlink('.' + file, err => {
+        fs.unlink('./public' + file, err => {
             if (err) throw err;
 
             console.log("File deleted: " + file);
@@ -56,7 +56,7 @@ router.post('/new-post', (req, res) => {
 router.post('/new-resource', upload.single('file'), (req, res) => {
     // res.send('Uploaded!: '+req.file);
 
-    res.json({ fileURL: 'upload/' + req.file.filename });
+    res.json({ fileURL: '/upload/' + req.file.filename });
 });
 
 router.get('/my-posts', (req, res) => {
@@ -131,7 +131,7 @@ router.put('/:id', (req, res) => {
     };
 
     req.body.deletedFiles.forEach(file => {
-        fs.unlink('.' + file, err => {
+        fs.unlink('./public' + file, err => {
             if (err) throw err;
 
             console.log("File deleted: " + file);
@@ -170,7 +170,7 @@ router.delete('/:id', (req, res) => {
         if (err) throw err;
 
         post.files.forEach(file => {
-            fs.unlink('.' + file, err => {
+            fs.unlink('./public' + file, err => {
                 if (err) throw err;
 
                 console.log("File deleted: " + file);
