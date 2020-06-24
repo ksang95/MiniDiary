@@ -1,5 +1,6 @@
 .Authentication{
     width: 30%;
+    min-width: 300px;
     margin: auto;
     margin-top: 80px;
 }
