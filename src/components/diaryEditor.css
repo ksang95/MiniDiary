@@ -1,3 +1,11 @@
+.DiaryEditor {
+    margin: 10px 0px;
+}
+
+.DiaryEditor .public-DraftEditor-content{
+    min-height: 200px;
+}
+
 .DiaryEditor .diary-editor-container .diary-editor-blank {
     clear: both;
 }

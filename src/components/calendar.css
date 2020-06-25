@@ -5,3 +5,17 @@
 .rbc-time-view  .rbc-time-content {
     display: none;
 }
+
+.rbc-row-content {
+    cursor: pointer;
+}
+
+.rbc-event:hover {
+    background-color: rgb(44, 136, 241) !important;
+    font-weight: bolder;
+}
+
+.rbc-date-cell a:hover {
+    text-decoration: none;
+    color: black;
+}

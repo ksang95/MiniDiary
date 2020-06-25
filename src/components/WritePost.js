@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Record, List } from 'immutable';
-import { Button } from 'react-bootstrap';
+import { Button, Form, Col, Row, FormControl } from 'react-bootstrap';
 import { connect } from 'react-redux'
 import { createRequest, updateRequest } from '../actions/post';
 import { CirclePicker } from 'react-color';
@@ -11,8 +11,12 @@ import moment from 'moment';
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import './writePost.css';
 import DiaryEditor from './DiaryEditor';
+import ko from 'date-fns/locale/ko';
+
+registerLocale('ko', ko);
 
 const Post = new Record({
+    _id: null,
     start: '',
     end: '',
     title: '',
@@ -35,37 +39,54 @@ class WritePost extends Component {
         }),
         imageList: [],
         error: '',
-        editorState: EditorState.createEmpty()
+        editorState: EditorState.createEmpty(),
+        startDate: new Date(),
+        endDate: new Date(),
     }
 
     componentDidMount() {
         if (this.props.location.pathname === '/diary/new') {
             const period = queryString.parse(this.props.location.search);
             this.setState({
-                post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() })
+                post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() }),
+                startDate: new Date(period.start),
+                endDate: new Date(period.end)
             });
         } else {
             const post = this.props.location.state.post;
-
             this.setState({
                 isNew: false,
-                post: post,
+                post: Post(post),
                 imageList: post.files,
-                editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content)))
+                editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content))),
+                startDate: new Date(post.start),
+                endDate: new Date(post.end)
             });
 
         }
     }
 
     handleStartDateChange = (date) => {
+        let endDate = this.state.endDate;
+        if (moment(date).diff(endDate) > 0)
+            endDate = new Date(date);
+
         this.setState({
-            post: this.state.post.set('start', moment(date).toISOString())
+            post: this.state.post.set('start', moment(moment(date).format('YYYY-MM-DD')).toISOString()),
+            startDate: new Date(date),
+            endDate: endDate
         });
     }
 
     handleEndDateChange = (date) => {
+        let startDate = this.state.startDate;
+        if (moment(startDate).diff(date) > 0)
+            startDate = new Date(date);
+
         this.setState({
-            post: this.state.post.set('end', moment(date).toISOString())
+            post: this.state.post.set('start', moment(moment(date).format('YYYY-MM-DD')).toISOString()),
+            startDate: startDate,
+            endDate: new Date(date)
         });
     }
 
@@ -89,7 +110,7 @@ class WritePost extends Component {
 
     handleSubmit = (e) => {
         const post = this.state.post.toJS();
-        console.log(post)
+
         if (post.title === '') {
             return this.setState({
                 error: '제목을 입력하세요.'
@@ -152,11 +173,9 @@ class WritePost extends Component {
         });
     }
 
-
     render() {
-        const { start, end, title, color } = this.state.post;
-        const startDate = new Date(start);
-        const endDate = new Date(end);
+        const { title, color } = this.state.post;
+        const { startDate, endDate, isNew, error, editorState, readOnly } = this.state;
 
         const backgroundStyle = {
             background: color,
@@ -165,40 +184,62 @@ class WritePost extends Component {
         return (
             <div className="WritePost" >
                 <div>
-                    <div>
-                        START DATE : <DatePicker
-                            selected={startDate}
-                            onChange={this.handleStartDateChange}
-                            selectsStart
-                            startDate={startDate}
-                            endDate={endDate}
-                        />
-                    </div>
-                    <div>
-                        END DATE : <DatePicker
-                            selected={endDate}
-                            onChange={this.handleEndDateChange}
-                            selectsEnd
-                            startDate={startDate}
-                            endDate={endDate}
-                            minDate={startDate}
-                        />
-                    </div>
+                    <Form>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm="2">
+                                START DATE
+                            </Form.Label>
+                            <Col sm="4">
+                                <DatePicker
+                                    selected={startDate}
+                                    onChange={this.handleStartDateChange}
+                                    selectsStart
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    locale='ko'
+                                />
+                            </Col>
+                            <Form.Label column sm="2">
+                                END DATE
+                            </Form.Label>
+                            <Col sm="4">
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={this.handleEndDateChange}
+                                    selectsEnd
+                                    startDate={startDate}
+                                    endDate={endDate}
+                                    locale='ko'
+                                />
+                            </Col>
+                            <Col sm="1">
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm="2" htmlFor="title">
+                                TITLE
+                            </Form.Label>
+                            <Col sm="10">
+                                <FormControl type="text" id="title" name="title"
+                                    value={title} onChange={this.handleTitleChange} autoFocus />
+                            </Col>
+
+                        </Form.Group>
+                    </Form>
                 </div>
-                <label htmlFor="title">TITLE :</label>
-                <input type="text" id="title" name="title"
-                    value={title} onChange={this.handleTitleChange} autoFocus></input>
-                <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} addImage={this.addImage} readOnly={false} />
-                <div>
-                    <div>제목 배경 색상
+                <DiaryEditor editorState={editorState} handleChange={this.handleEditorChange} addImage={this.addImage} readOnly={false} />
+                <div className="color-picker-wrapper">
+                    <div>Choose the background of title :
                     <div className='title-background-example' style={backgroundStyle}>Title</div>
                     </div>
-                    <CirclePicker color={color} onChangeComplete={this.handleColorChange}
+                    <CirclePicker width="90%" color={color} onChangeComplete={this.handleColorChange}
                         colors={['#c4def6', '#F47373', '#697689', '#37D67A', '#2CCCE4', '#555555',
                             '#dce775', '#ff8a65', '#ba68c8', '#FCB900', '#8BC34A']} />
                 </div>
-                <div>{this.state.error}</div>
-                <Button onClick={this.handleSubmit}>{this.state.isNew ? 'Create' : 'Update'}</Button>
+                <div className="error-message">{error}</div>
+                <div className="submit-wrapper">
+                    <Button variant="dark" className="submit" onClick={this.handleSubmit}>SUBMIT</Button>
+                </div>
 
             </div>
         );

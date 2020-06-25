@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 
 class PostList extends Component {
     state = {
-        list: []
+        list: [],
+        ready: false
     }
 
     componentDidMount() {
@@ -19,6 +20,9 @@ class PostList extends Component {
                         list: this.props.postList
                     });
                 } 
+                this.setState({
+                    ready: true
+                })
             });
 
     }
@@ -27,7 +31,7 @@ class PostList extends Component {
         const titles = this.state.list.map(post => <Post key={post._id} post={post} history={this.props.history}></Post>)
         return (
             <div className="PostList">
-                {titles}
+                {this.state.ready&&(titles.length>0?titles:<div>해당 기간의 다이어리가 존재하지 않습니다.</div>)}
             </div>
         );
     }

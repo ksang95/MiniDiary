@@ -36,6 +36,9 @@ router.post('/new-post', (req, res) => {
         })
     })
 
+    console.log(req.body.post.start)
+    console.log(new Date(req.body.post.start))
+
     const post = new Post({
         writer: req.session.loginInfo.userid,
         title: req.body.post.title,
@@ -138,6 +141,7 @@ router.put('/:id', (req, res) => {
         })
     })
 
+    console.log(req.body.post.start);
     const post = {
         ...req.body.post,
         start: new Date(req.body.post.start),

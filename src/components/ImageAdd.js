@@ -5,7 +5,6 @@ import './imageAdd.css';
 
 class ImageAdd extends Component {
     handleChange = (e) => {
-        console.log(e.target.files[0].size)
         if (e.target.files[0].size > 600000) {
             alert("파일 크기 제한 - 600KB 이하");
         } else {
