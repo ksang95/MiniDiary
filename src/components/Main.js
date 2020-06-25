@@ -21,14 +21,16 @@ class Main extends Component {
     }
 
     componentDidMount() {
-        let today = new Date();
-        let start = new Date(today.getFullYear(), today.getMonth(), 1);
-        let end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        this.getPostList(start, end);
+        if (this.props.isLoggedIn) {
+            let today = new Date();
+            let start = new Date(today.getFullYear(), today.getMonth(), 1);
+            let end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            this.getPostList(start, end);
+        }
     }
 
-    componentWillReceiveProps(nextProps, nextContext){
-        if(nextProps.isLoggedIn===false){
+    componentWillReceiveProps(nextProps, nextContext) {
+        if (nextProps.isLoggedIn === false) {
             this.setState({
                 myEventsList: []
             })
@@ -36,23 +38,24 @@ class Main extends Component {
     }
 
     getPostList = (start, end) => {
+        if (this.props.isLoggedIn) {
+            this.props.getPostListRequest(start, end)
+                .then(() => {
+                    if (this.props.status === 'SUCCESS') {
+                        this.setState({
+                            myEventsList: this.props.postList.map(post => {
 
-        this.props.getPostListRequest(start, end)
-            .then(() => {
-                if (this.props.status === 'SUCCESS') {
-                    this.setState({
-                        myEventsList: this.props.postList.map(post => {
-
-                            return {
-                                ...post,
-                                start: new Date(post.start),
-                                end: new Date(moment(post.end).add('1', 's').toISOString()),
-                                allDay: true
-                            }
-                        })
-                    });
-                }
-            });
+                                return {
+                                    ...post,
+                                    start: new Date(post.start),
+                                    end: new Date(moment(post.end).add('1', 's').toISOString()),
+                                    allDay: true
+                                }
+                            })
+                        });
+                    }
+                });
+        }
     }
 
 
@@ -116,16 +119,16 @@ class Main extends Component {
                             }
                         }
                     }
-                   dayPropGetter={
-                       (date)=>{
-                           return {
-                               className:'calendar-day',
-                               style:{
-                                    cursor:'pointer'
-                               }
-                           }
-                       }
-                   }
+                    dayPropGetter={
+                        (date) => {
+                            return {
+                                className: 'calendar-day',
+                                style: {
+                                    cursor: 'pointer'
+                                }
+                            }
+                        }
+                    }
 
                 ></Calendar>
                 <Modal show={isSlotSelected} onHide={this.handleClose} centered>

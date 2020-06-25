@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { loginRequest, getInfoRequest } from '../actions/authentication';
-import { Button, FormLabel, Form } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 
 class Login extends Component {
     state = {

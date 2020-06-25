@@ -25,7 +25,7 @@ class ImageAdd extends Component {
     render() {
         return (
             <div className="ImageAdd draftJsToolbar__buttonWrapper__1Dmqh">
-                <label className="draftJsToolbar__button__qi1gf" htmlFor="file"><img src="/iconfinder_icon-image_211677.png"></img></label>
+                <label className="draftJsToolbar__button__qi1gf" htmlFor="file"><img src="/iconfinder_icon-image_211677.png" alt=''></img></label>
                 <input type="file" id="file" name="file" accept="image/*" onChange={this.handleChange} />
             </div>
         );

@@ -50,7 +50,6 @@ const decorator = composeDecorators(
 );
 const imagePlugin = createImagePlugin({ decorator });
 const videoPlugin = createVideoPlugin({ decorator });
-const { types } = videoPlugin;
 
 const plugins = [toolbarPlugin, emojiPlugin, imagePlugin,
     blockDndPlugin, focusPlugin, alignmentPlugin, resizeablePlugin, videoPlugin];
@@ -91,6 +90,7 @@ class DiaryEditor extends Component {
                 return 'diary-code';
             case 'atomic':
                 return 'diary-editor-image-container';
+            default:
         }
     }
 
@@ -124,7 +124,7 @@ class DiaryEditor extends Component {
                                         <BlockquoteButton {...externalProps} />
                                         <CodeBlockButton {...externalProps} />
                                         <Separator {...externalProps} />
-                                        
+
                                         <EmojiSuggestions />
                                         <EmojiSelect />
                                         <ImageAdd

@@ -175,7 +175,7 @@ class WritePost extends Component {
 
     render() {
         const { title, color } = this.state.post;
-        const { startDate, endDate, isNew, error, editorState, readOnly } = this.state;
+        const { startDate, endDate,  error, editorState } = this.state;
 
         const backgroundStyle = {
             background: color,

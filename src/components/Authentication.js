@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import SignUp from './SignUp';
 import Login from './Login';
 import { Button } from 'react-bootstrap';

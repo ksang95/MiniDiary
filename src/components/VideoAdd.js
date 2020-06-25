@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './videoAdd.css';
-import { Button, Col, Row, Form } from 'react-bootstrap';
+import { Button, Row, Form } from 'react-bootstrap';
 
 class VideoAdd extends Component {
     state = {
@@ -44,7 +44,7 @@ class VideoAdd extends Component {
         return (
             <div className="VideoAdd draftJsToolbar__buttonWrapper__1Dmqh">
                 <button className="video-url-button draftJsToolbar__button__qi1gf" onClick={this.handleOpen}>
-                    <img className='video-url-image' src='/pngwing.com.png' style={{ width: '20px' }}></img>
+                    <img className='video-url-image' src='/pngwing.com.png' style={{ width: '20px' }} alt=''></img>
                 </button>
                 {this.state.open &&
                     <Row>
