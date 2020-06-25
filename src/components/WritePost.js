@@ -47,6 +47,7 @@ class WritePost extends Component {
     componentDidMount() {
         if (this.props.location.pathname === '/diary/new') {
             const period = queryString.parse(this.props.location.search);
+
             this.setState({
                 post: this.state.post.merge({ start: moment(period.start).toISOString(), end: moment(period.end).toISOString() }),
                 startDate: new Date(period.start),
@@ -54,9 +55,14 @@ class WritePost extends Component {
             });
         } else {
             const post = this.props.location.state.post;
+
             this.setState({
                 isNew: false,
-                post: Post(post),
+                post: Post({
+                    ...post,
+                    start: moment(post.start).toISOString(),
+                    end: moment(post.end).toISOString()
+                }),
                 imageList: post.files,
                 editorState: EditorState.createWithContent(convertFromRaw(JSON.parse(post.content))),
                 startDate: new Date(post.start),
@@ -67,24 +73,34 @@ class WritePost extends Component {
     }
 
     handleStartDateChange = (date) => {
+        let start = moment(moment(date).format('YYYY-MM-DD')).toISOString();
+
+        let end = this.state.post.end;
         let endDate = this.state.endDate;
-        if (moment(date).diff(endDate) > 0)
+        if (moment(date).diff(endDate) > 0) {
             endDate = new Date(date);
+            end = start;
+        }
 
         this.setState({
-            post: this.state.post.set('start', moment(moment(date).format('YYYY-MM-DD')).toISOString()),
+            post: this.state.post.merge({ start, end }),
             startDate: new Date(date),
             endDate: endDate
         });
     }
 
     handleEndDateChange = (date) => {
+        let end = moment(moment(date).format('YYYY-MM-DD')).toISOString();
+
+        let start = this.state.post.start;
         let startDate = this.state.startDate;
-        if (moment(startDate).diff(date) > 0)
+        if (moment(startDate).diff(date) > 0) {
             startDate = new Date(date);
+            start = end;
+        }
 
         this.setState({
-            post: this.state.post.set('start', moment(moment(date).format('YYYY-MM-DD')).toISOString()),
+            post: this.state.post.merge({ start, end }),
             startDate: startDate,
             endDate: new Date(date)
         });
@@ -175,8 +191,8 @@ class WritePost extends Component {
 
     render() {
         const { title, color } = this.state.post;
-        const { startDate, endDate,  error, editorState } = this.state;
-
+        const { startDate, endDate, error, editorState } = this.state;
+        console.log(title)
         const backgroundStyle = {
             background: color,
         };
@@ -239,7 +255,7 @@ class WritePost extends Component {
                 <div className="error-message">{error}</div>
                 <div className="submit-wrapper">
                     <Button variant="dark" className="submit" onClick={this.handleSubmit}>SUBMIT</Button>
-                    <Button variant='outline-dark' onClick={()=>{ this.props.history.goBack()}}>BACK</Button>
+                    <Button variant='outline-dark' onClick={() => { this.props.history.goBack() }}>BACK</Button>
                 </div>
 
             </div>

@@ -99,7 +99,7 @@ class PostDetail extends Component {
                         <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} readOnly={true} />
                         <div className="written-date"><span>Written on {createdDate}</span></div>
                         <div className="submit-wrapper">
-                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post } }} ><Button variant="outline-primary">UPDATE</Button></Link>
+                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post.toJS() } }} ><Button variant="outline-primary">UPDATE</Button></Link>
                             <Button variant='danger' onClick={this.handleDelete}>DELETE</Button>
                         </div>
                     </div>

@@ -21,45 +21,49 @@ class Main extends Component {
     }
 
     componentDidMount() {
-        if (this.props.isLoggedIn) {
-            let today = new Date();
-            let start = new Date(today.getFullYear(), today.getMonth(), 1);
-            let end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            this.getPostList(start, end);
+        const result = document.cookie.split(';').find(e => e.startsWith('user='));
+        if (result) {
+            const user = JSON.parse(atob(result.split('=')[1]));
+
+            if (user.isLoggedIn) {
+                let today = new Date();
+                let start = new Date(today.getFullYear(), today.getMonth(), 1);
+                let end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                this.getPostList(start, end);
+            } 
         }
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (nextProps.isLoggedIn === false) {
+    componentWillReceiveProps(nextProps, nextContext){
+        if(this.props.isLoggedIn!==nextProps.isLoggedIn&&nextProps.valid){
             this.setState({
-                myEventsList: []
+                myEventsList:[]
             })
         }
     }
 
     getPostList = (start, end) => {
-        if (this.props.isLoggedIn) {
-            this.props.getPostListRequest(start, end)
-                .then(() => {
-                    if (this.props.status === 'SUCCESS') {
-                        this.setState({
-                            myEventsList: this.props.postList.map(post => {
+        this.props.getPostListRequest(start, end)
+            .then(() => {
+                if (this.props.status === 'SUCCESS') {
+                    this.setState({
+                        myEventsList: this.props.postList.map(post => {
 
-                                return {
-                                    ...post,
-                                    start: new Date(post.start),
-                                    end: new Date(moment(post.end).add('1', 's').toISOString()),
-                                    allDay: true
-                                }
-                            })
-                        });
-                    }
-                });
-        }
+                            return {
+                                ...post,
+                                start: new Date(post.start),
+                                end: new Date(moment(post.end).add('1', 'm').toISOString()),
+                                allDay: true
+                            }
+                        })
+                    });
+                }
+            });
     }
 
 
     handleSlotClick = (select) => {
+        console.log(select)
         this.setState({
             isSlotSelected: true,
             slotInfo: {
@@ -70,10 +74,12 @@ class Main extends Component {
     }
 
     handleRange = (dates) => {
-        if (dates.start)
-            this.getPostList(dates.start, dates.end);
-        else
-            this.getPostList(dates[0], dates[dates.length - 1])
+        if (this.props.isLoggedIn) {
+            if (dates.start)
+                this.getPostList(dates.start, dates.end);
+            else
+                this.getPostList(dates[0], dates[dates.length - 1])
+        }
     }
 
     handleEventClick = (event) => {
@@ -162,6 +168,7 @@ class Main extends Component {
 const mapStateToProps = (state) => {
     return {
         isLoggedIn: state.authentication.info.isLoggedIn,
+        valid: state.authentication.info.valid,
         status: state.post.getByUser.status,
         postList: state.post.getByUser.list
     };
