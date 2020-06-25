@@ -22,7 +22,7 @@ const upload = multer({ storage: storage });
 
 router.post('/new-post', (req, res) => {
     if (typeof req.session.loginInfo === 'undefined') {
-        return res.status(403).json({
+        return res.status(401).json({
             error: "NOT LOGGED IN",
             code: 1
         });
@@ -64,7 +64,7 @@ router.post('/new-resource', upload.single('file'), (req, res) => {
 
 router.get('/my-posts', (req, res) => {
     if (typeof req.session.loginInfo === 'undefined') {
-        return res.status(403).json({
+        return res.status(401).json({
             error: "NOT LOGGED IN",
             code: 1
         });
@@ -97,7 +97,7 @@ router.get('/my-posts', (req, res) => {
 
 router.get('/:id', (req, res) => {
     if (typeof req.session.loginInfo === 'undefined') {
-        return res.status(403).json({
+        return res.status(401).json({
             error: "NOT LOGGED IN",
             code: 1
         });
@@ -113,6 +113,13 @@ router.get('/:id', (req, res) => {
     Post.findById(req.params.id, (err, post) => {
         if (err) throw err;
 
+        if (post.writer !== req.session.loginInfo.userid) {
+            return res.status(403).json({
+                error: "UNAUTHORIZED",
+                code:3
+            })
+        }
+
         res.json({ post });
     });
 });
@@ -120,7 +127,7 @@ router.get('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
 
     if (typeof req.session.loginInfo === 'undefined') {
-        return res.status(403).json({
+        return res.status(401).json({
             error: "NOT LOGGED IN",
             code: 1
         });
@@ -157,7 +164,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     if (typeof req.session.loginInfo === 'undefined') {
-        return res.status(403).json({
+        return res.status(401).json({
             error: "NOT LOGGED IN",
             code: 1
         });

@@ -12,7 +12,7 @@ router.post('/new-user', (req, res) => {
             code: 1
         });
     }
-    
+
     User.findOne({ userid: req.body.user.userid }, (err, user) => {
         if (err) throw err;
 
@@ -68,7 +68,8 @@ router.post('/login', (req, res) => {
 router.get('/me/info', (req, res) => {
     if (typeof req.session.loginInfo === "undefined") {
         return res.status(401).json({
-            error: 1
+            error: "LOGIN FAILED",
+            code: 1
         });
     }
 

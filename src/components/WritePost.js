@@ -134,7 +134,7 @@ class WritePost extends Component {
                 .then(() => {
                     if (this.props.create.status === 'FAILURE') {
                         this.setState({
-                            error: '로그인이 되어있지 않습니다.'
+                            error: '로그인이 필요한 페이지입니다.'
                         });
                     }
                     else {
@@ -147,7 +147,7 @@ class WritePost extends Component {
                 .then(() => {
                     if (this.props.update.status === 'FAILURE') {
                         const errorMessage = [
-                            "로그인이 되어있지 않습니다.",
+                            "로그인이 필요한 페이지입니다.",
                             "존재하지 않는 글입니다.",
                         ];
 

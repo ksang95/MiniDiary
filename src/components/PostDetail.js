@@ -6,6 +6,8 @@ import { List, Record } from 'immutable';
 import { Link } from 'react-router-dom';
 import { EditorState, convertFromRaw } from 'draft-js';
 import DiaryEditor from './DiaryEditor';
+import './postDetail.css';
+import { Button } from 'react-bootstrap';
 
 const Post = new Record({
     _id: '',
@@ -32,8 +34,9 @@ class PostDetail extends Component {
             .then(() => {
                 if (this.props.getStatus === 'FAILURE') {
                     const errorMessage = [
-                        "로그인이 되어있지 않습니다.",
+                        "로그인이 필요한 페이지입니다.",
                         "존재하지 않는 글입니다.",
+                        "권한이 없습니다."
                     ];
 
                     this.setState({
@@ -41,7 +44,7 @@ class PostDetail extends Component {
                     });
                 } else {
                     const { start, end, content } = this.props.post;
-                    
+
                     this.setState({
                         post: Post({
                             ...this.props.post,
@@ -59,7 +62,7 @@ class PostDetail extends Component {
             .then(() => {
                 if (this.props.deleteStatus === 'FAILURE') {
                     const errorMessage = [
-                        "로그인이 되어있지 않습니다.",
+                        "로그인이 필요한 페이지입니다.",
                         "존재하지 않는 글입니다.",
                     ];
 
@@ -80,21 +83,23 @@ class PostDetail extends Component {
     }
 
     render() {
-        const { start, end, title, content } = this.state.post;
+        const { start, end, title, color, created } = this.state.post;
+        const createdDate = moment(created).format('YYYY-MM-DD')
 
         return (
             <div className="PostDetail">
                 {this.state.error.length !== 0 ?
-                    <div>{this.state.error}</div> :
+                    <div className='error-message'>{this.state.error}</div> :
                     <div>
-                        <div>{start === end ?
-                            start : `${start} ~ ${end}`}</div>
-                        <div>{title}</div>
-                        {/* <div dangerouslySetInnerHTML={{ __html: content }}></div> */}
+                        <div className="detail-header" style={{ backgroundColor: color, color: 'white' }}>
+                            <div className="period"><span className="detail-name">DATE</span><span>{start}</span>{start !== end && (<><span>~</span><span>{end}</span></>)}</div>
+                            <div className="title"><span className="detail-name">TITLE</span><span>{title}</span></div>
+                        </div>
                         <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} readOnly={true} />
-                        <div>
-                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post } }} ><button>수정</button></Link>
-                            <button onClick={this.handleDelete}>삭제</button>
+                        <div className="written-date"><span>Written on {createdDate}</span></div>
+                        <div className="edit-button">
+                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post } }} ><Button variant="outline-primary">수정</Button></Link>
+                            <Button variant='danger' onClick={this.handleDelete}>삭제</Button>
                         </div>
                     </div>
                 }

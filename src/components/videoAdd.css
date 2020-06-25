@@ -2,10 +2,22 @@
     margin-top: 10px;
     background: #FFF;
     position: absolute;
-    height: 54px;
-    width: 300px;
-    border-radius: 2px;
+    height: 60px;
+    width: 400px;
+    border-radius: 5px;
     padding: 10px;
     box-shadow: 0px 4px 30px 0px rgba(220, 220, 220, 1);
     z-index: 1000;
+}
+
+.VideoAdd .video-url-input {
+    width: 80%;
+    display: inline-block;
+    margin: auto;
+}
+
+.VideoAdd .video-url-input-button {
+    margin-bottom: 5px;
+    margin-left: 10px;
+    height: 100%;;
 }

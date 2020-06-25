@@ -9,15 +9,15 @@ class Post extends Component {
 
     render() {
         const { post } = this.props;
-        const start = moment(post.start).format('MM월 DD일');
-        const end = moment(post.end).format('MM월 DD일');
+        const start = moment(post.start).format('MM-DD ddd');
+        const end = moment(post.end).format('MM-DD ddd');
 
         return (
             <div className="Post">
                 <div className="wrapper" style={{ backgroundColor: post.color }} onClick={this.handleClick}>
-                    <div className="title">{post.title}</div>
+                    <div className="title-wrapper"><span className="title">{post.title}</span><span className="arrow">→</span></div>
                     <div className="info">
-                        <div>시작: {start} 끝: {end}</div>
+                        <div className="info-period"><span>{start}</span>{start !== end && (<><span>~</span><span>{end}</span></>)}</div>
                     </div>
                 </div>
             </div>

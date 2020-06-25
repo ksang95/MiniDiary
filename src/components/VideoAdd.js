@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './videoAdd.css';
+import { Button, Col, Row, Form } from 'react-bootstrap';
 
 class VideoAdd extends Component {
     state = {
@@ -20,7 +21,7 @@ class VideoAdd extends Component {
 
     handleSubmit = (e) => {
         if (this.state.videoURL !== '')
-            this.props.onChange(this.props.modifier(this.props.editorState, {src:this.state.videoURL}))
+            this.props.onChange(this.props.modifier(this.props.editorState, { src: this.state.videoURL }))
         this.setState({
             open: false
         })
@@ -42,8 +43,17 @@ class VideoAdd extends Component {
     render() {
         return (
             <div className="VideoAdd draftJsToolbar__buttonWrapper__1Dmqh">
-                <button className="video-url-button draftJsToolbar__button__qi1gf" onClick={this.handleOpen}><img className='video-url-image' src='/pngwing.com.png' style={{ width: '20px' }}></img></button>
-                {this.state.open && <div className='video-url-input-wrapper' id='video-url-input-wrapper'><input className='video-url-input' value={this.state.videoURL} onChange={this.handleChange}></input><button className='video-url-input-button' onClick={this.handleSubmit}>입력</button></div>}
+                <button className="video-url-button draftJsToolbar__button__qi1gf" onClick={this.handleOpen}>
+                    <img className='video-url-image' src='/pngwing.com.png' style={{ width: '20px' }}></img>
+                </button>
+                {this.state.open &&
+                    <Row>
+                        <div className='video-url-input-wrapper' id='video-url-input-wrapper'>
+                            <Form.Control type="text" className='video-url-input' value={this.state.videoURL} onChange={this.handleChange} />
+                            <Button variant='secondary' className='video-url-input-button sm-1' onClick={this.handleSubmit}>입력</Button>
+                        </div>
+                    </Row>
+                }
             </div>
         );
     }

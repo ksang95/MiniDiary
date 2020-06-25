@@ -1,0 +1,55 @@
+html,
+body,
+#root,
+.App {
+    height: 90%;
+}
+
+.PostDetail {
+    margin: 50px auto;
+    width: 70%;
+    border: 1px solid gainsboro;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 3px gainsboro;
+    min-height: 100%;
+    display: table;
+}
+
+.PostDetail .error-message {
+    font-size: 20pt;
+    vertical-align: middle;
+    display: table-cell;
+}
+
+.PostDetail .detail-header {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 10px 30px;
+    font-size: 14pt;
+}
+.PostDetail .detail-name {
+    margin-right: 20px !important;
+}
+
+.PostDetail .period span {
+    margin-right: 10px;
+}
+
+.PostDetail .DiaryEditor {
+    margin: 30px;
+}
+
+.PostDetail .written-date {
+    text-align: end;
+    margin-right: 30px;
+    color: grey;
+}
+
+.PostDetail .edit-button {
+    text-align: center;
+    margin: 20px 0px;
+}
+
+.PostDetail .edit-button button:first-child {
+    margin-right: 80px;
+}
