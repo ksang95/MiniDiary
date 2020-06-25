@@ -1,4 +1,4 @@
-Mini-Project For "My MiniDiary"
+Mini-Project For "MiniDiary"
 ==========
 
 - Period: 2020.06.15 ~ 2020.06.26
