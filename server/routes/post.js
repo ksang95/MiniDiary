@@ -1,22 +1,32 @@
 const express = require('express');
 const Post = require('../models/post');
 const mongoose = require('mongoose');
+const aws = require('aws-sdk');
 const multer = require('multer');
-const fs = require('fs');
+const multerS3 = require('multer-s3');
 
 const router = express.Router();
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        console.log(__dirname)
-        cb(null, 'public/upload/')
+const s3 = new aws.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: 'ap-northeast-2'
+});
+const bucket = process.env.S3_BUCKET_NAME;
+const storage = multerS3({
+    s3: s3,
+    bucket: bucket + '/upload',
+    acl: 'public-read',
+    metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
     },
-    filename: function (req, file, cb) {
-        // let temp = 'image';
+    key: function (req, file, cb) {
+        console.log(bucket)
         let fileExtension = file.originalname.substring(file.originalname.lastIndexOf('.'));
-        if (typeof req.session.loginInfo !== 'undefined') //로그인 안하면 cb() 호출안해서 저장 안되는 듯..
+        //로그인 안 했을 때 cb()만 작동안하면 파일 업로드 안되는 것 같다.
+        if (typeof req.session.loginInfo !== 'undefined')
             cb(null, req.session.loginInfo.userid + '-' + Date.now() + fileExtension)
     }
-});
+})
 
 const upload = multer({ storage: storage });
 
@@ -28,16 +38,19 @@ router.post('/new-post', (req, res) => {
         });
     }
 
+
     req.body.deletedFiles.forEach(file => {
-        fs.unlink('./public' + file, err => {
+        const params = {
+            Bucket: bucket + '/upload',
+            Key: file
+        };
+
+        s3.deleteObject(params, (err, data) => {
             if (err) throw err;
 
-            console.log("File deleted: " + file);
-        })
-    })
-
-    console.log(req.body.post.start)
-    console.log(new Date(req.body.post.start))
+            console.log(data)
+        });
+    });
 
     const post = new Post({
         writer: req.session.loginInfo.userid,
@@ -57,9 +70,10 @@ router.post('/new-post', (req, res) => {
 });
 
 router.post('/new-resource', upload.single('file'), (req, res) => {
-    // res.send('Uploaded!: '+req.file);
-
-    res.json({ fileURL: '/upload/' + req.file.filename });
+    res.json({
+        fileURL: req.file.location,
+        fileName: req.file.key
+    });
 });
 
 router.get('/my-posts', (req, res) => {
@@ -116,7 +130,7 @@ router.get('/:id', (req, res) => {
         if (post.writer !== req.session.loginInfo.userid) {
             return res.status(403).json({
                 error: "UNAUTHORIZED",
-                code:3
+                code: 3
             })
         }
 
@@ -141,14 +155,18 @@ router.put('/:id', (req, res) => {
     };
 
     req.body.deletedFiles.forEach(file => {
-        fs.unlink('./public' + file, err => {
+        const params = {
+            Bucket: bucket + '/upload',
+            Key: file
+        };
+
+        s3.deleteObject(params, (err, data) => {
             if (err) throw err;
 
-            console.log("File deleted: " + file);
-        })
+            console.log(data)
+        });
     })
 
-    console.log(req.body.post.start);
     const post = {
         ...req.body.post,
         start: new Date(req.body.post.start),
@@ -181,14 +199,19 @@ router.delete('/:id', (req, res) => {
         if (err) throw err;
 
         post.files.forEach(file => {
-            fs.unlink('./public' + file, err => {
+            const params = {
+                Bucket: bucket + '/upload',
+                Key: file
+            };
+
+            s3.deleteObject(params, (err, data) => {
                 if (err) throw err;
 
-                console.log("File deleted: " + file);
+                console.log(data)
             });
-        })
+        });
 
-        res.json({ success: true })
+        res.json({ success: true });
     });
 });
 

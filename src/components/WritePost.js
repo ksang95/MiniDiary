@@ -164,11 +164,11 @@ class WritePost extends Component {
 
     }
 
-    addImage = (url) => {
+    addImage = (image) => {
         this.setState({
             imageList: [
                 ...this.state.imageList,
-                url
+                image
             ]
         });
     }

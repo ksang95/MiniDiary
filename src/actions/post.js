@@ -177,14 +177,15 @@ export function fileUploadRequest(formData) {
             }
         })
             .then((response) => {
-                dispatch(fileUpload(response.data.fileURL));
+                dispatch(fileUpload(response.data.fileURL, response.data.fileName));
             });
     };
 };
 
-export function fileUpload(fileURL) {
+export function fileUpload(fileURL, fileName) {
     return {
         type: FILE_UPLOAD,
-        fileURL
+        fileURL,
+        fileName
     };
 };

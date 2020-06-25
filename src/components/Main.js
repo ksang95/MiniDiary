@@ -27,6 +27,14 @@ class Main extends Component {
         this.getPostList(start, end);
     }
 
+    componentWillReceiveProps(nextProps, nextContext){
+        if(nextProps.isLoggedIn===false){
+            this.setState({
+                myEventsList: []
+            })
+        }
+    }
+
     getPostList = (start, end) => {
 
         this.props.getPostListRequest(start, end)

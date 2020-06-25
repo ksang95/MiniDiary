@@ -25,7 +25,8 @@ const initialState = {
         error: -1
     },
     file: {
-        url: ''
+        url: '',
+        name: ''
     }
 };
 
@@ -133,7 +134,8 @@ export default function authentication(state, action) {
         case types.FILE_UPLOAD:
             return update(state, {
                 file: {
-                    url: { $set: action.fileURL }
+                    url: { $set: action.fileURL },
+                    name: { $set: action.fileName }
                 }
             });
         default:
