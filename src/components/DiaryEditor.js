@@ -34,7 +34,7 @@ import VideoAdd from './VideoAdd';
 
 const toolbarPlugin = createToolbarPlugin();
 const { Toolbar } = toolbarPlugin;
-const emojiPlugin = createEmojiPlugin();
+const emojiPlugin = createEmojiPlugin({useNativeArt:false});
 const { EmojiSuggestions, EmojiSelect } = emojiPlugin;
 const focusPlugin = createFocusPlugin();
 const resizeablePlugin = createResizeablePlugin();
