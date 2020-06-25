@@ -88,6 +88,7 @@ class PostDetail extends Component {
 
         return (
             <div className="PostDetail">
+                <div className="close-button"><Link to="/">×</Link></div>
                 {this.state.error.length !== 0 ?
                     <div className='error-message'>{this.state.error}</div> :
                     <div>
@@ -97,9 +98,9 @@ class PostDetail extends Component {
                         </div>
                         <DiaryEditor editorState={this.state.editorState} handleChange={this.handleEditorChange} readOnly={true} />
                         <div className="written-date"><span>Written on {createdDate}</span></div>
-                        <div className="edit-button">
-                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post } }} ><Button variant="outline-primary">수정</Button></Link>
-                            <Button variant='danger' onClick={this.handleDelete}>삭제</Button>
+                        <div className="submit-wrapper">
+                            <Link to={{ pathname: '/diary/update', state: { post: this.state.post } }} ><Button variant="outline-primary">UPDATE</Button></Link>
+                            <Button variant='danger' onClick={this.handleDelete}>DELETE</Button>
                         </div>
                     </div>
                 }

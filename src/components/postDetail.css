@@ -45,11 +45,28 @@ body,
     color: grey;
 }
 
-.PostDetail .edit-button {
+.PostDetail .submit-wrapper {
     text-align: center;
     margin: 20px 0px;
 }
 
-.PostDetail .edit-button button:first-child {
+.PostDetail .submit-wrapper button:first-child {
     margin-right: 80px;
+}
+
+.PostDetail .close-button {
+    position: absolute;
+    right: 16%;
+}
+
+.PostDetail .close-button a {
+    text-decoration: none;
+    color:rgb(65, 65, 65);
+    font-size: 20pt;
+    text-align: end;
+}
+
+.PostDetail .close-button a:hover {
+    text-decoration: none;
+    color:black;
 }

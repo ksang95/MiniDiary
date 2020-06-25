@@ -239,6 +239,7 @@ class WritePost extends Component {
                 <div className="error-message">{error}</div>
                 <div className="submit-wrapper">
                     <Button variant="dark" className="submit" onClick={this.handleSubmit}>SUBMIT</Button>
+                    <Button variant='outline-dark' onClick={()=>{ this.props.history.goBack()}}>BACK</Button>
                 </div>
 
             </div>
