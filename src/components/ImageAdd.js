@@ -10,7 +10,6 @@ class ImageAdd extends Component {
         if (e.target.files[0].size > 600000) {
             alert("파일 크기 제한 - 600KB 이하");
         } else {
-            console.log(e.target.files[0])
             const formData = new FormData();
             formData.append('file', e.target.files[0]);
 

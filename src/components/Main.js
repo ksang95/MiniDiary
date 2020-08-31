@@ -63,7 +63,6 @@ class Main extends Component {
 
 
     handleSlotClick = (select) => {
-        console.log(select)
         this.setState({
             isSlotSelected: true,
             slotInfo: {

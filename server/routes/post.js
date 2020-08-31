@@ -20,7 +20,6 @@ const storage = multerS3({
         cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-        console.log(bucket)
         let fileExtension = file.originalname.substring(file.originalname.lastIndexOf('.'));
         //로그인 안 했을 때 cb()만 작동안하면 파일 업로드 안되는 것 같다.
         if (typeof req.session.loginInfo !== 'undefined')
@@ -47,8 +46,6 @@ router.post('/new-post', (req, res) => {
 
         s3.deleteObject(params, (err, data) => {
             if (err) throw err;
-
-            console.log(data)
         });
     });
 
@@ -162,8 +159,6 @@ router.put('/:id', (req, res) => {
 
         s3.deleteObject(params, (err, data) => {
             if (err) throw err;
-
-            console.log(data)
         });
     })
 
@@ -206,8 +201,6 @@ router.delete('/:id', (req, res) => {
 
             s3.deleteObject(params, (err, data) => {
                 if (err) throw err;
-
-                console.log(data)
             });
         });
 
