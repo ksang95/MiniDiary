@@ -104,7 +104,7 @@ export function getInfoFailure() {
 export function logoutRequest() {
     return (dispatch) => {
 
-        return axios.post('api/user/logout')
+        return axios.post('/api/user/logout')
             .then(response => {
                 dispatch(logout());
             });
