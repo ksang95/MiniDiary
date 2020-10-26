@@ -14,8 +14,7 @@ db.on('error', console.error);
 db.once('open', () => {
     console.log('Connected to mongodb');
 });
-mongoose.connect('mongodb+srv://sang:1234@cluster0-cuyi2.mongodb.net/minidiary?retryWrites=true&w=majority');
-
+mongoose.connect(`mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0-cuyi2.mongodb.net/minidiary?retryWrites=true&w=majority`);
 app.use(morgan('dev')); //요청에 대해 로그를 사용하겠다! 함수 인자에 따라 로그가 다르게 나옴
 app.use(bodyParser.json()); //req.body의 데이터 접근 위함 -> 최신 express에 body-parser 내장됨
 app.use(bodyParser.urlencoded({extended:false}));
